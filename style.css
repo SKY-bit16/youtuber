@@ -142,7 +142,7 @@ header h1 span {
 .shorts .badge { background-color: rgba(234, 179, 8, 0.2); color: #facc15; }
 
 .weekly-total {
-    margin-bottom: 1.5rem;
+    margin-bottom: 2rem; /* เพิ่มพื้นที่ด้านบนให้ตัวเลขไม่เบียด */
 }
 
 .weekly-total .label {
@@ -162,7 +162,7 @@ header h1 span {
     display: flex;
     align-items: flex-end;
     justify-content: space-between;
-    padding-top: 1rem;
+    padding-top: 1.5rem; /* เพิ่ม padding เพื่อไม่ให้กล่องตัวเลขโดนขอบบัง */
     border-bottom: 1px solid var(--border-color);
     position: relative;
 }
@@ -179,41 +179,38 @@ header h1 span {
 
 .bar {
     width: 65%;
-    background-color: var(--border-color);
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
-    transition: height 0.6s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s;
     position: relative;
 }
 
-.category-card:hover .bar {
-    background-color: rgba(255, 255, 255, 0.3);
-}
+/* 🎨 กำหนดให้สีของแท่งกราฟขึ้นทันทีแยกตามหมวดหมู่ */
+.music .bar { background-color: var(--accent-blue); }
+.live .bar { background-color: #ef4444; }
+.news .bar { background-color: #10b981; }
+.shorts .bar { background-color: #eab308; }
 
-.music .bar-wrapper:hover .bar { background-color: var(--accent-blue); }
-.live .bar-wrapper:hover .bar { background-color: #ef4444; }
-.news .bar-wrapper:hover .bar { background-color: #10b981; }
-.shorts .bar-wrapper:hover .bar { background-color: #eab308; }
-
+/* 💡 ปรับให้ตัวเลขชั่วโมงโชว์ทันที (ไม่ต้องรอ Hover) */
 .bar::after {
     content: attr(data-time);
     position: absolute;
-    top: -25px;
+    top: -26px;
     left: 50%;
-    transform: translateX(-50%) scale(0);
+    transform: translateX(-50%) scale(1); /* ตั้งค่าให้แสดงผล 100% ตลอดเวลา */
     background-color: var(--pure-white);
     color: var(--bg-dark-blue);
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     font-weight: bold;
-    padding: 2px 6px;
+    padding: 2px 5px;
     border-radius: 4px;
-    transition: transform 0.2s ease;
     white-space: nowrap;
     pointer-events: none;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
 }
 
-.bar-wrapper:hover .bar::after {
-    transform: translateX(-50%) scale(1);
+/* เพิ่ม Effect เล็กน้อยตอนเอาเมาส์มาชี้ให้ดูขยายขึ้นเด่นขึ้น */
+.bar-wrapper:hover .bar {
+    filter: brightness(1.2);
 }
 
 .day-label {
