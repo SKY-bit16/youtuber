@@ -30,63 +30,56 @@
             </div>
         </div>
 
-        <!-- โซนการ์ด 4 หมวดหมู่ (จะถูกสร้างและใส่ข้อมูลอัตโนมัติด้วย JavaScript) -->
+        <!-- โซนการ์ด 4 หมวดหมู่ -->
         <div class="category-grid" id="category-grid-container"></div>
+
+        <!-- 🔥 เพิ่มส่วนแสดงสถานะการดูสดด้านล่าง (Live Watching Status) -->
+        <div class="live-activity-box">
+            <div class="activity-header">
+                <span class="live-dot"></span> สถานะการเข้าชมล่าสุด (Live Activity)
+            </div>
+            <div class="ticker-wrapper">
+                <div class="ticker-container" id="ticker-container">
+                    <!-- ข้อมูลจะถูกดึงมาใส่และเลื่อนตรงนี้โดย JavaScript -->
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- JavaScript สำหรับคำนวณและดึงข้อมูลมาแสดงผลอัตโนมัติ -->
+    <!-- JavaScript สำหรับคำนวณและสร้างเอฟเฟกต์เลื่อนอัตโนมัติ -->
     <script>
-        // 📊 1. ชุดข้อมูลดิบ (เปลี่ยนตัวเลขตรงนี้ได้เลย ระบบจะคำนวณกราฟและเวลารวมให้เอง)
+        // 📊 1. ชุดข้อมูลสถิติของกราฟ
         const youtubeData = [
-            {
-                key: 'music',
-                title: 'ดนตรี (Music)',
-                badge: 'เพลง & มิวสิควิดีโอ',
-                // ใส่ข้อมูลชั่วโมงเข้าชมของแต่ละวัน [จ, อ, พ, พฤ, ศ, ส, อา]
-                dailyHours: [6, 4.5, 5, 7.5, 9, 4, 6.2] 
-            },
-            {
-                key: 'live',
-                title: 'ไลฟ์สด (Live Stream)',
-                badge: 'สตรีมมิ่ง & เกม',
-                dailyHours: [5, 7.5, 4, 8.2, 12, 16, 15.7]
-            },
-            {
-                key: 'news',
-                title: 'ข่าว (News & Blogs)',
-                badge: 'สาระ & ทันเหตุการณ์',
-                dailyHours: [3.5, 3, 2.5, 2, 1.8, 2.8, 2.6]
-            },
-            {
-                key: 'shorts',
-                title: 'คลิปสั้น (Shorts)',
-                badge: 'บันเทิงแบบเร่งด่วน',
-                dailyHours: [3.2, 4.1, 5.5, 2.9, 4, 4.8, 4.5]
-            }
+            { key: 'music', title: 'ดนตรี (Music)', badge: 'เพลง & มิวสิควิดีโอ', dailyHours: [6, 4.5, 5, 7.5, 9, 4, 6.2] },
+            { key: 'live', title: 'ไลฟ์สด (Live Stream)', badge: 'สตรีมมิ่ง & เกม', dailyHours: [5, 7.5, 4, 8.2, 12, 16, 15.7] },
+            { key: 'news', title: 'ข่าว (News & Blogs)', badge: 'สาระ & ทันเหตุการณ์', dailyHours: [3.5, 3, 2.5, 2, 1.8, 2.8, 2.6] },
+            { key: 'shorts', title: 'คลิปสั้น (Shorts)', badge: 'บันเทิงแบบเร่งด่วน', dailyHours: [3.2, 4.1, 5.5, 2.9, 4, 4.8, 4.5] }
+        ];
+
+        // 👁️ 2. ชุดข้อมูลจำลอง "ใคร กำลังดู คลิปอะไร เวลาไหน" (สามารถเพิ่ม/แก้ไขตรงนี้ได้เลย)
+        const watchingActivities = [
+            { user: "สมชาย สายลุย", video: "LIVE: แข่งขัน Esport รอบชิงชนะเลิศประจำปี", time: "เมื่อสักครู่" },
+            { user: "มินตรา น่ารัก", video: "Official MV - ซิงเกิ้ลใหม่ล่าสุดดนตรีป็อป", time: "1 นาทีที่แล้ว" },
+            { user: "กิตติพงษ์ วงศ์คำ", video: "สรุปข่าวเด่นรอบวัน สาระเด่นประเด็นร้อน", time: "3 นาทีที่แล้ว" },
+            { user: "ณัฐชา พาเพลิน", video: "ล้างตู้เย็นยังไงให้สะอาดภายใน 60 วินาที #Shorts", time: "5 นาทีที่แล้ว" },
+            { user: "ธนกร ยอดนักสตรีม", video: "สอนเขียนโค้ด HTML CSS ฉบับมือใหม่เข้าใจง่าย", time: "8 นาทีที่แล้ว" }
         ];
 
         const dayLabels = ['จ.', 'อ.', 'พ.', 'พฤ.', 'ศ.', 'ส.', 'อา.'];
 
-        // 🛠️ 2. ฟังก์ชันสร้างการ์ดและคำนวณอัตโนมัติ
+        // 🛠️ 3. ฟังก์ชันสร้างการ์ดกราฟอัตโนมัติ
         function renderDashboard() {
             const container = document.getElementById('category-grid-container');
-            container.innerHTML = ''; // เคลียร์หน้าจอก่อนวาด
-
+            container.innerHTML = '';
             youtubeData.forEach(cat => {
-                // คำนวณเวลารวม 7 วัน
                 const totalHours = cat.dailyHours.reduce((a, b) => a + b, 0);
                 const fullHours = Math.floor(totalHours);
                 const minutes = Math.round((totalHours - fullHours) * 60);
-                
-                // หาค่าชั่วโมงที่สูงที่สุดในหมวดหมู่นั้น เพื่อใช้อ้างอิงความสูงกราฟ 100%
                 const maxHour = Math.max(...cat.dailyHours);
 
-                // สร้าง HTML สำหรับแท่งกราฟแต่ละวัน
                 let chartHtml = '';
                 cat.dailyHours.forEach((hours, index) => {
-                    // คำนวณความสูงเป็น % โดยเทียบกับวันที่มีสถิติสูงสุด
                     const barHeight = maxHour > 0 ? (hours / maxHour) * 85 : 0; 
-                    
                     chartHtml += `
                         <div class="bar-wrapper">
                             <div class="bar" style="height: ${barHeight}%;" data-time="${hours} ชม."></div>
@@ -95,8 +88,7 @@
                     `;
                 });
 
-                // ประกอบร่างการ์ดแต่ละหมวดหมู่
-                const cardHtml = `
+                container.innerHTML += `
                     <div class="category-card ${cat.key}">
                         <div class="card-header">
                             <div class="card-title">${cat.title}</div>
@@ -106,21 +98,57 @@
                             <div class="label">7 วันที่ผ่านมา</div>
                             <div class="time">${fullHours} ชม. ${minutes > 0 ? minutes + ' น.' : ''}</div>
                         </div>
-                        <div class="chart-container">
-                            ${chartHtml}
-                        </div>
+                        <div class="chart-container">${chartHtml}</div>
                     </div>
                 `;
-                
-                container.innerHTML += cardHtml;
             });
         }
 
-        // ⏱️ 3. ฟังก์ชันนับเวลา Real-time ของวันนี้ด้านบน
+        // 🔄 4. ฟังก์ชันจัดการการเลื่อนข้อมูลสถานะการดูสด (ค้าง 2 วิแล้วเลื่อนขึ้น)
+        function initActivityTicker() {
+            const ticker = document.getElementById('ticker-container');
+            ticker.innerHTML = '';
+
+            // นำข้อมูลไปสร้างเป็น List รายการในหน้าเว็บ
+            watchingActivities.forEach(item => {
+                ticker.innerHTML += `
+                    <div class="ticker-item">
+                        <div class="user-name">👤 ${item.user}</div>
+                        <div class="video-title">🎬 กำลังรับชม: <span>${item.video}</span></div>
+                        <div class="activity-time">⏱️ ${item.time}</div>
+                    </div>
+                `;
+            });
+
+            // ทำการ Clone ไอเทมแรกไปต่อท้ายเพื่อความนุ่มนวลตอนวนลูปกลับ
+            if(watchingActivities.length > 0) {
+                const firstClone = ticker.children[0].cloneNode(true);
+                ticker.appendChild(firstClone);
+            }
+
+            let currentIndex = 0;
+            const itemHeight = 60; // ความสูงของแต่ละแถว (ต้องล้อตาม CSS)
+
+            setInterval(() => {
+                currentIndex++;
+                ticker.style.transition = "transform 0.5s ease-in-out";
+                ticker.style.transform = `translateY(-${currentIndex * itemHeight}px)`;
+
+                // ถ้าเลื่อนถึงตัวสุดท้าย (ตัวที่โคลนไว้) ให้แอบวาร์ปกลับไปเริ่มตัวที่ 0 แบบเนียนๆ
+                if (currentIndex >= watchingActivities.length) {
+                    setTimeout(() => {
+                        ticker.style.transition = "none";
+                        currentIndex = 0;
+                        ticker.style.transform = `translateY(0px)`;
+                    }, 500); // รอให้แอนิเมชันเลื่อนขึ้นจบก่อนค่อยวาร์ปกลับ
+                }
+            }, 2500); // 2500ms = ค้างไว้ 2 วินาที + ใช้เวลาเลื่อนขึ้นอีก 0.5 วินาทีให้ดูสมูท
+        }
+
+        // ⏱️ 5. ระบบเวลา Real-time ด้านบน
         let totalSecondsToday = 28450; 
         function updateLiveTime() {
             totalSecondsToday += Math.floor(Math.random() * 3) + 1; 
-
             const hrs = Math.floor(totalSecondsToday / 3600);
             const mins = Math.floor((totalSecondsToday % 3600) / 60);
             const secs = totalSecondsToday % 60;
@@ -134,8 +162,9 @@
             document.getElementById('current-time').innerText = now.toLocaleTimeString('th-TH');
         }
 
-        // สั่งให้ระบบทำงานเมื่อโหลดหน้าเว็บ
+        // สั่งเปิดตัวทำงานทั้งหมด
         renderDashboard();
+        initActivityTicker();
         setInterval(updateLiveTime, 1000);
         updateLiveTime();
     </script>
