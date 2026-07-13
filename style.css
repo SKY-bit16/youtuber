@@ -1,4 +1,5 @@
-/* style.css */
+/* นำไปต่อท้ายไฟล์ style.css เดิม หรือเซฟทับทั้งหมดได้เลยครับ */
+
 * {
     margin: 0;
     padding: 0;
@@ -100,6 +101,7 @@ header h1 span {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
     gap: 1.5rem;
+    margin-bottom: 2.5rem; /* เพิ่มพื้นที่เพื่อไม่ให้การ์ดชนกับกล่องล่าง */
 }
 
 .category-card {
@@ -142,7 +144,7 @@ header h1 span {
 .shorts .badge { background-color: rgba(234, 179, 8, 0.2); color: #facc15; }
 
 .weekly-total {
-    margin-bottom: 2rem; /* เพิ่มพื้นที่ด้านบนให้ตัวเลขไม่เบียด */
+    margin-bottom: 2rem;
 }
 
 .weekly-total .label {
@@ -162,7 +164,7 @@ header h1 span {
     display: flex;
     align-items: flex-end;
     justify-content: space-between;
-    padding-top: 1.5rem; /* เพิ่ม padding เพื่อไม่ให้กล่องตัวเลขโดนขอบบัง */
+    padding-top: 1.5rem;
     border-bottom: 1px solid var(--border-color);
     position: relative;
 }
@@ -184,19 +186,17 @@ header h1 span {
     position: relative;
 }
 
-/* 🎨 กำหนดให้สีของแท่งกราฟขึ้นทันทีแยกตามหมวดหมู่ */
 .music .bar { background-color: var(--accent-blue); }
 .live .bar { background-color: #ef4444; }
 .news .bar { background-color: #10b981; }
 .shorts .bar { background-color: #eab308; }
 
-/* 💡 ปรับให้ตัวเลขชั่วโมงโชว์ทันที (ไม่ต้องรอ Hover) */
 .bar::after {
     content: attr(data-time);
     position: absolute;
     top: -26px;
     left: 50%;
-    transform: translateX(-50%) scale(1); /* ตั้งค่าให้แสดงผล 100% ตลอดเวลา */
+    transform: translateX(-50%) scale(1);
     background-color: var(--pure-white);
     color: var(--bg-dark-blue);
     font-size: 0.7rem;
@@ -208,7 +208,6 @@ header h1 span {
     box-shadow: 0 2px 5px rgba(0,0,0,0.3);
 }
 
-/* เพิ่ม Effect เล็กน้อยตอนเอาเมาส์มาชี้ให้ดูขยายขึ้นเด่นขึ้น */
 .bar-wrapper:hover .bar {
     filter: brightness(1.2);
 }
@@ -219,8 +218,97 @@ header h1 span {
     margin-top: 0.5rem;
 }
 
-@media (max-width: 768px) {
-    body { padding: 1rem; }
-    .today-overview-box { flex-direction: column; align-items: flex-start; gap: 1rem; }
-    .today-date { text-align: left; }
+/* 🎨 สไตล์ใหม่ของกล่อง Live Activity Ticker ด้านล่างสุด */
+.live-activity-box {
+    background-color: var(--card-dark-blue);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 1.2rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+.activity-header {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--pure-white);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+    border-right: 2px solid var(--border-color);
+    padding-right: 2rem;
+}
+
+/* จุดไฟกะพริบสีแดงแบบ Live */
+.live-dot {
+    width: 10px;
+    height: 10px;
+    background-color: #ef4444;
+    border-radius: 50%;
+    display: inline-block;
+    animation: blink 1.5s infinite ease-in-out;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 0.4; transform: scale(0.9); }
+    50% { opacity: 1; transform: scale(1.1); }
+}
+
+/* โซนล็อกความสูงเพื่อให้แสดงแค่ทีละแถว */
+.ticker-wrapper {
+    flex-grow: 1;
+    height: 60px; /* บังคับความสูงคงที่สำหรับ 1 แถว */
+    overflow: hidden; /* ซ่อนแถวอื่นๆ ที่ยังไม่ถึงคิว */
+    position: relative;
+}
+
+.ticker-container {
+    display: flex;
+    flex-direction: column;
+}
+
+/* หน้าตาของข้อความแต่ละแถวที่วิ่ง */
+.ticker-item {
+    height: 60px; /* ความสูงต้องเท่ากับ ticker-wrapper */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    font-size: 0.95rem;
+}
+
+.user-name {
+    font-weight: 600;
+    color: var(--cyan-blue);
+    min-width: 150px;
+}
+
+.video-title {
+    color: var(--text-light);
+    flex-grow: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; /* ตัดคำถ้าชื่อคลิปยาวเกินไป */
+}
+
+.video-title span {
+    font-weight: 500;
+    color: var(--pure-white);
+}
+
+.activity-time {
+    color: var(--text-gray);
+    font-size: 0.85rem;
+    white-space: nowrap;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .live-activity-box { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+    .activity-header { border-right: none; padding-right: 0; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border-color); width: 100%; }
+    .ticker-item { flex-direction: column; align-items: flex-start; height: auto; padding: 0.5rem 0; gap: 0.2rem; }
+    .ticker-wrapper { height: 75px; }
 }
