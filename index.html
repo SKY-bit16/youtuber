@@ -6,7 +6,7 @@
     <title>YouTube Viewer Analytics Dashboard</title>
     <!-- Google Font -->
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- เชื่อมโยงไฟล์ CSS (ต้องชื่อ style.css และอยู่ในโฟลเดอร์เดียวกัน) -->
+    <!-- เชื่อมโยงไฟล์ CSS -->
     <link rel="stylesheet" href="./style.css">
 </head>
 <body>
@@ -30,101 +30,95 @@
             </div>
         </div>
 
-        <!-- โซนการ์ด 4 หมวดหมู่ -->
-        <div class="category-grid">
-            
-            <!-- ดนตรี -->
-            <div class="category-card music">
-                <div class="card-header">
-                    <div class="card-title">ดนตรี (Music)</div>
-                    <span class="badge">เพลง & มิวสิควิดีโอ</span>
-                </div>
-                <div class="weekly-total">
-                    <div class="label">7 วันที่ผ่านมา</div>
-                    <div class="time">42 ชม. 15 น.</div>
-                </div>
-                <div class="chart-container">
-                    <div class="bar-wrapper"><div class="bar" style="height: 60%;" data-time="6 ชม."></div><span class="day-label">จ.</span></div>
-                    <div class="bar-wrapper"><div class="bar" style="height: 45%;" data-time="4.5 ชม."></div><span class="day-label">อ.</span></div>
-                    <div class="bar-wrapper"><div class="bar" style="height: 50%;" data-time="5 ชม."></div><span class="day-label">พ.</span></div>
-                    <div class="bar-wrapper"><div class="bar" style="height: 75%;" data-time="7.5 ชม."></div><span class="day-label">พฤ.</span></div>
-                    <div class="bar-wrapper"><div class="bar" style="height: 90%;" data-time="9 ชม."></div><span class="day-label">ศ.</span></div>
-                    <div class="bar-wrapper"><div class="bar" style="height: 40%;" data-time="4 ชม."></div><span class="day-label">ส.</span></div>
-                    <div class="bar-wrapper"><div class="bar" style="height: 65%;" data-time="6.2 ชม."></div><span class="day-label">อา.</span></div>
-                </div>
-            </div>
-
-            <!-- ไลฟ์สด -->
-            <div class="category-card live">
-                <div class="card-header">
-                    <div class="card-title">ไลฟ์สด (Live Stream)</div>
-                    <span class="badge">สตรีมมิ่ง & เกม</span>
-                </div>
-                <div class="weekly-total">
-                    <div class="label">7 วันที่ผ่านมา</div>
-                    <div class="time">68 ชม. 40 น.</div>
-                </div>
-                <div class="chart-container">
-                    <div class="bar-wrapper"><div class="bar" style="height: 40%;" data-time="5 ชม."></div><span class="day-label">จ.</span></div>
-                    <div class="bar-wrapper"><div class="bar" style="height: 55%;" data-time="7.5 ชม."></div><span class="day-label">อ.</span></div>
-                    <div class="bar-wrapper"><div class="bar" style="height: 30%;" data-time="4 ชม."></div><span class="day-label">พ.</span></div>
-                    <div class="bar-wrapper"><div class="bar" style="height: 60%;" data-time="8.2 ชม."></div><span class="day-label">พฤ.</span></div>
-                    <div class="bar-wrapper"><div class="bar" style="height: 85%;" data-time="12 ชม."></div><span class="day-label">ศ.</span></div>
-                    <div class="bar-wrapper"><div class="bar" style="height: 95%;" data-time="16 ชม."></div><span class="day-label">ส.</span></div>
-                    <div class="bar-wrapper"><div class="bar" style="height: 90%;" data-time="15.7 ชม."></div><span class="day-label">อา.</span></div>
-                </div>
-            </div>
-
-            <!-- ข่าว -->
-            <div class="category-card news">
-                <div class="card-header">
-                    <div class="card-title">ข่าว (News & Blogs)</div>
-                    <span class="badge">สาระ & ทันเหตุการณ์</span>
-                </div>
-                <div class="weekly-total">
-                    <div class="label">7 วันที่ผ่านมา</div>
-                    <div class="time">18 ชม. 20 น.</div>
-                </div>
-                <div class="chart-container">
-                    <div class="bar-wrapper"><div class="bar" style="height: 80%;" data-time="3.5 ชม."></div><span class="day-label">จ.</span></div>
-                    <div class="bar-wrapper"><div class="bar" style="height: 70%;" data-time="3 ชม."></div><span class="day-label">อ.</span></div>
-                    <div class="bar-wrapper"><div class="bar" style="height: 60%;" data-time="2.5 ชม."></div><span class="day-label">พ.</span></div>
-                    <div class="bar-wrapper"><div class="bar" style="height: 50%;" data-time="2 ชม."></div><span class="day-label">พฤ.</span></div>
-                    <div class="bar-wrapper"><div class="bar" style="height: 45%;" data-time="1.8 ชม."></div><span class="day-label">ศ.</span></div>
-                    <div class="bar-wrapper"><div class="bar" style="height: 65%;" data-time="2.8 ชม."></div><span class="day-label">ส.</span></div>
-                    <div class="bar-wrapper"><div class="bar" style="height: 55%;" data-time="2.6 ชม."></div><span class="day-label">อา.</span></div>
-                </div>
-            </div>
-
-            <!-- คลิปสั้น Shorts -->
-            <div class="category-card shorts">
-                <div class="card-header">
-                    <div class="card-title">คลิปสั้น (Shorts)</div>
-                    <span class="badge">บันเทิงแบบเร่งด่วน</span>
-                </div>
-                <div class="weekly-total">
-                    <div class="label">7 วันที่ผ่านมา</div>
-                    <div class="time">29 ชม. 05 น.</div>
-                </div>
-                <div class="chart-container">
-                    <div class="bar-wrapper"><div class="bar" style="height: 50%;" data-time="3.2 ชม."></div><span class="day-label">จ.</span></div>
-                    <div class="bar-wrapper"><div class="bar" style="height: 65%;" data-time="4.1 ชม."></div><span class="day-label">อ.</span></div>
-                    <div class="bar-wrapper"><div class="bar" style="height: 80%;" data-time="5.5 ชม."></div><span class="day-label">พ.</span></div>
-                    <div class="bar-wrapper"><div class="bar" style="height: 40%;" data-time="2.9 ชม."></div><span class="day-label">พฤ.</span></div>
-                    <div class="bar-wrapper"><div class="bar" style="height: 60%;" data-time="4 ชม."></div><span class="day-label">ศ.</span></div>
-                    <div class="bar-wrapper"><div class="bar" style="height: 75%;" data-time="4.8 ชม."></div><span class="day-label">ส.</span></div>
-                    <div class="bar-wrapper"><div class="bar" style="height: 70%;" data-time="4.5 ชม."></div><span class="day-label">อา.</span></div>
-                </div>
-            </div>
-
-        </div>
+        <!-- โซนการ์ด 4 หมวดหมู่ (จะถูกสร้างและใส่ข้อมูลอัตโนมัติด้วย JavaScript) -->
+        <div class="category-grid" id="category-grid-container"></div>
     </div>
 
-    <!-- JavaScript สำหรับนับเวลา Real-time -->
+    <!-- JavaScript สำหรับคำนวณและดึงข้อมูลมาแสดงผลอัตโนมัติ -->
     <script>
-        let totalSecondsToday = 28450; 
+        // 📊 1. ชุดข้อมูลดิบ (เปลี่ยนตัวเลขตรงนี้ได้เลย ระบบจะคำนวณกราฟและเวลารวมให้เอง)
+        const youtubeData = [
+            {
+                key: 'music',
+                title: 'ดนตรี (Music)',
+                badge: 'เพลง & มิวสิควิดีโอ',
+                // ใส่ข้อมูลชั่วโมงเข้าชมของแต่ละวัน [จ, อ, พ, พฤ, ศ, ส, อา]
+                dailyHours: [6, 4.5, 5, 7.5, 9, 4, 6.2] 
+            },
+            {
+                key: 'live',
+                title: 'ไลฟ์สด (Live Stream)',
+                badge: 'สตรีมมิ่ง & เกม',
+                dailyHours: [5, 7.5, 4, 8.2, 12, 16, 15.7]
+            },
+            {
+                key: 'news',
+                title: 'ข่าว (News & Blogs)',
+                badge: 'สาระ & ทันเหตุการณ์',
+                dailyHours: [3.5, 3, 2.5, 2, 1.8, 2.8, 2.6]
+            },
+            {
+                key: 'shorts',
+                title: 'คลิปสั้น (Shorts)',
+                badge: 'บันเทิงแบบเร่งด่วน',
+                dailyHours: [3.2, 4.1, 5.5, 2.9, 4, 4.8, 4.5]
+            }
+        ];
 
-        function updateDashboard() {
+        const dayLabels = ['จ.', 'อ.', 'พ.', 'พฤ.', 'ศ.', 'ส.', 'อา.'];
+
+        // 🛠️ 2. ฟังก์ชันสร้างการ์ดและคำนวณอัตโนมัติ
+        function renderDashboard() {
+            const container = document.getElementById('category-grid-container');
+            container.innerHTML = ''; // เคลียร์หน้าจอก่อนวาด
+
+            youtubeData.forEach(cat => {
+                // คำนวณเวลารวม 7 วัน
+                const totalHours = cat.dailyHours.reduce((a, b) => a + b, 0);
+                const fullHours = Math.floor(totalHours);
+                const minutes = Math.round((totalHours - fullHours) * 60);
+                
+                // หาค่าชั่วโมงที่สูงที่สุดในหมวดหมู่นั้น เพื่อใช้อ้างอิงความสูงกราฟ 100%
+                const maxHour = Math.max(...cat.dailyHours);
+
+                // สร้าง HTML สำหรับแท่งกราฟแต่ละวัน
+                let chartHtml = '';
+                cat.dailyHours.forEach((hours, index) => {
+                    // คำนวณความสูงเป็น % โดยเทียบกับวันที่มีสถิติสูงสุด
+                    const barHeight = maxHour > 0 ? (hours / maxHour) * 85 : 0; 
+                    
+                    chartHtml += `
+                        <div class="bar-wrapper">
+                            <div class="bar" style="height: ${barHeight}%;" data-time="${hours} ชม."></div>
+                            <span class="day-label">${dayLabels[index]}</span>
+                        </div>
+                    `;
+                });
+
+                // ประกอบร่างการ์ดแต่ละหมวดหมู่
+                const cardHtml = `
+                    <div class="category-card ${cat.key}">
+                        <div class="card-header">
+                            <div class="card-title">${cat.title}</div>
+                            <span class="badge">${cat.badge}</span>
+                        </div>
+                        <div class="weekly-total">
+                            <div class="label">7 วันที่ผ่านมา</div>
+                            <div class="time">${fullHours} ชม. ${minutes > 0 ? minutes + ' น.' : ''}</div>
+                        </div>
+                        <div class="chart-container">
+                            ${chartHtml}
+                        </div>
+                    </div>
+                `;
+                
+                container.innerHTML += cardHtml;
+            });
+        }
+
+        // ⏱️ 3. ฟังก์ชันนับเวลา Real-time ของวันนี้ด้านบน
+        let totalSecondsToday = 28450; 
+        function updateLiveTime() {
             totalSecondsToday += Math.floor(Math.random() * 3) + 1; 
 
             const hrs = Math.floor(totalSecondsToday / 3600);
@@ -140,8 +134,10 @@
             document.getElementById('current-time').innerText = now.toLocaleTimeString('th-TH');
         }
 
-        setInterval(updateDashboard, 1000);
-        updateDashboard();
+        // สั่งให้ระบบทำงานเมื่อโหลดหน้าเว็บ
+        renderDashboard();
+        setInterval(updateLiveTime, 1000);
+        updateLiveTime();
     </script>
 </body>
 </html>
