@@ -1,4 +1,4 @@
-/* CSS Reset & Variables */
+/* style.css */
 * {
     margin: 0;
     padding: 0;
@@ -7,13 +7,13 @@
 }
 
 :root {
-    --bg-dark-blue: #0f172a;      /* น้ำเงินเข้มพื้นหลังหลัก */
-    --card-dark-blue: #1e293b;    /* น้ำเงินเข้มสำหรับ Card */
-    --accent-blue: #3b82f6;       /* น้ำเงินสว่างสำหรับเน้นจุดสำคัญ */
-    --cyan-blue: #0ea5e9;         /* ฟ้าอมเขียวสำหรับ Short/Live */
-    --pure-white: #ffffff;        /* ขาวสะอาด */
-    --text-gray: #94a3b8;         /* เทาสำหรับตัวหนังสือรอง */
-    --text-light: #f8fafc;        /* ขาวนวลสำหรับตัวหนังสือหลัก */
+    --bg-dark-blue: #0f172a;
+    --card-dark-blue: #1e293b;
+    --accent-blue: #3b82f6;
+    --cyan-blue: #0ea5e9;
+    --pure-white: #ffffff;
+    --text-gray: #94a3b8;
+    --text-light: #f8fafc;
     --border-color: #334155;
 }
 
@@ -29,7 +29,6 @@ body {
     margin: 0 auto;
 }
 
-/* Header Style */
 header {
     display: flex;
     justify-content: space-between;
@@ -49,7 +48,11 @@ header h1 span {
     color: var(--accent-blue);
 }
 
-/* Today's Overview Card (ส่วนที่อัปเดตตลอดเวลา) */
+.update-status {
+    color: var(--text-gray); 
+    font-size: 0.9rem;
+}
+
 .today-overview-box {
     background: linear-gradient(135deg, var(--accent-blue), #1d4ed8);
     color: var(--pure-white);
@@ -84,7 +87,15 @@ header h1 span {
     backdrop-filter: blur(5px);
 }
 
-/* Grid Layout สำหรับ 4 หมวดหมู่ */
+#current-date {
+    font-weight: 600;
+}
+
+#current-time {
+    font-size: 0.85rem; 
+    opacity: 0.8;
+}
+
 .category-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -105,7 +116,6 @@ header h1 span {
     border-color: var(--accent-blue);
 }
 
-/* Card Header */
 .card-header {
     display: flex;
     justify-content: space-between;
@@ -126,13 +136,11 @@ header h1 span {
     font-weight: 500;
 }
 
-/* สี Badge แยกตามหมวดหมู่ */
 .music .badge { background-color: rgba(59, 130, 246, 0.2); color: #60a5fa; }
 .live .badge { background-color: rgba(239, 68, 68, 0.2); color: #f87171; }
 .news .badge { background-color: rgba(16, 185, 129, 0.2); color: #34d399; }
 .shorts .badge { background-color: rgba(234, 179, 8, 0.2); color: #facc15; }
 
-/* สถิติเวลารวม 7 วัน */
 .weekly-total {
     margin-bottom: 1.5rem;
 }
@@ -149,7 +157,6 @@ header h1 span {
     margin-top: 0.2rem;
 }
 
-/* CSS Chart (จำลองสถิติ 7 วันที่ผ่านมา) */
 .chart-container {
     height: 120px;
     display: flex;
@@ -179,18 +186,15 @@ header h1 span {
     position: relative;
 }
 
-/* เอฟเฟกต์สีเมื่อ Hover แท่งกราฟ */
 .category-card:hover .bar {
     background-color: rgba(255, 255, 255, 0.3);
 }
 
-/* ไฮไลต์สีตามหมวดหมู่เมื่อชี้กราฟ */
 .music .bar-wrapper:hover .bar { background-color: var(--accent-blue); }
 .live .bar-wrapper:hover .bar { background-color: #ef4444; }
 .news .bar-wrapper:hover .bar { background-color: #10b981; }
 .shorts .bar-wrapper:hover .bar { background-color: #eab308; }
 
-/* Tooltip บอกเวลาในแท่งกราฟ */
 .bar::after {
     content: attr(data-time);
     position: absolute;
@@ -218,7 +222,6 @@ header h1 span {
     margin-top: 0.5rem;
 }
 
-/* Responsive Design */
 @media (max-width: 768px) {
     body { padding: 1rem; }
     .today-overview-box { flex-direction: column; align-items: flex-start; gap: 1rem; }

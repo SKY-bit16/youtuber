@@ -6,30 +6,31 @@
     <title>YouTube Viewer Analytics Dashboard</title>
     <!-- Google Font -->
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- เชื่อมโยงไฟล์ CSS ภายนอก -->
-    <link rel="stylesheet" href="style.css">
+    <!-- เชื่อมโยงไฟล์ CSS (ต้องชื่อ style.css และอยู่ในโฟลเดอร์เดียวกัน) -->
+    <link rel="stylesheet" href="./style.css">
 </head>
 <body>
 
     <div class="container">
+        <!-- Header -->
         <header>
             <h1>YT Viewer <span>Analytics</span></h1>
-            <div style="color: var(--text-gray); font-size: 0.9rem;">ข้อมูลอัปเดตแบบ Real-time</div>
+            <div class="update-status">ข้อมูลอัปเดตแบบ Real-time</div>
         </header>
 
-        <!-- เวลาสะสมวันนี้ -->
+        <!-- แผงเวลารวมวันนี้ -->
         <div class="today-overview-box">
             <div class="today-info">
                 <h2>เวลาเข้าชมรวมวันนี้ (Today's Total Watch Time)</h2>
                 <div class="total-time" id="live-total-time">00 ชม. 00 น. 00 ว.</div>
             </div>
             <div class="today-date">
-                <div style="font-weight: 600;" id="current-date">วันที่โหลดข้อมูล...</div>
-                <div style="font-size: 0.85rem; opacity: 0.8;" id="current-time">00:00:00</div>
+                <div id="current-date">วันที่โหลดข้อมูล...</div>
+                <div id="current-time">00:00:00</div>
             </div>
         </div>
 
-        <!-- การ์ดทั้ง 4 หมวดหมู่ -->
+        <!-- โซนการ์ด 4 หมวดหมู่ -->
         <div class="category-grid">
             
             <!-- ดนตรี -->
@@ -119,12 +120,12 @@
         </div>
     </div>
 
-    <!-- Script สำหรับอัปเดตแบบ Real-time -->
+    <!-- JavaScript สำหรับนับเวลา Real-time -->
     <script>
-        let totalSecondsToday = 28450;
+        let totalSecondsToday = 28450; 
 
         function updateDashboard() {
-            totalSecondsToday += Math.floor(Math.random() * 3) + 1;
+            totalSecondsToday += Math.floor(Math.random() * 3) + 1; 
 
             const hrs = Math.floor(totalSecondsToday / 3600);
             const mins = Math.floor((totalSecondsToday % 3600) / 60);
