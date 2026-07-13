@@ -46,9 +46,9 @@
         </div>
     </div>
 
-    <!-- JavaScript สำหรับคำนวณและสร้างเอฟเฟกต์เลื่อนอัตโนมัติ -->
+!-- JavaScript สำหรับคำนวณกราฟ สุ่มกิจกรรม และนับเวลา Real-time -->
     <script>
-        // 📊 1. ชุดข้อมูลสถิติของกราฟ
+        // 📊 1. ชุดข้อมูลสถิติของกราฟ (เหมือนเดิม)
         const youtubeData = [
             { key: 'music', title: 'ดนตรี (Music)', badge: 'เพลง & มิวสิควิดีโอ', dailyHours: [6, 4.5, 5, 7.5, 9, 4, 6.2] },
             { key: 'live', title: 'ไลฟ์สด (Live Stream)', badge: 'สตรีมมิ่ง & เกม', dailyHours: [5, 7.5, 4, 8.2, 12, 16, 15.7] },
@@ -56,14 +56,27 @@
             { key: 'shorts', title: 'คลิปสั้น (Shorts)', badge: 'บันเทิงแบบเร่งด่วน', dailyHours: [3.2, 4.1, 5.5, 2.9, 4, 4.8, 4.5] }
         ];
 
-        // 👁️ 2. ชุดข้อมูลจำลอง "ใคร กำลังดู คลิปอะไร เวลาไหน" (สามารถเพิ่ม/แก้ไขตรงนี้ได้เลย)
-        const watchingActivities = [
-            { user: "สมชาย สายลุย", video: "LIVE: แข่งขัน Esport รอบชิงชนะเลิศประจำปี", time: "เมื่อสักครู่" },
-            { user: "มินตรา น่ารัก", video: "Official MV - ซิงเกิ้ลใหม่ล่าสุดดนตรีป็อป", time: "1 นาทีที่แล้ว" },
-            { user: "กิตติพงษ์ วงศ์คำ", video: "สรุปข่าวเด่นรอบวัน สาระเด่นประเด็นร้อน", time: "3 นาทีที่แล้ว" },
-            { user: "ณัฐชา พาเพลิน", video: "ล้างตู้เย็นยังไงให้สะอาดภายใน 60 วินาที #Shorts", time: "5 นาทีที่แล้ว" },
-            { user: "ธนกร ยอดนักสตรีม", video: "สอนเขียนโค้ด HTML CSS ฉบับมือใหม่เข้าใจง่าย", time: "8 นาทีที่แล้ว" }
+        // 🎲 2. คลังข้อมูลดิบสำหรับสุ่ม (เพิ่ม/ลด รายชื่อหรือคลิปตรงนี้ได้เลย)
+        const rawUsers = [
+            "สมชาย สายลุย", "มินตรา น่ารัก", "กิตติพงษ์ วงศ์คำ", "ณัฐชา พาเพลิน", 
+            "ธนกร ยอดนักสตรีม", "อนันต์ เปี่ยมดี", "ศิริพร สอนง่าย", "วีรชัย ชัยชนะ",
+            "พีรพล แซ่ลี้", "ชลลดา ตาหวาน"
         ];
+
+        const rawVideos = [
+            "LIVE: แข่งขัน Esport รอบชิงชนะเลิศประจำปี",
+            "Official MV - ซิงเกิ้ลใหม่ล่าสุดดนตรีป็อป",
+            "สรุปข่าวเด่นรอบวัน สาระเด่นประเด็นร้อน",
+            "ล้างตู้เย็นยังไงให้สะอาดภายใน 60 วินาที #Shorts",
+            "สอนเขียนโค้ด HTML CSS ฉบับมือใหม่เข้าใจง่าย",
+            "VLOG: พาทัวร์คาเฟ่เปิดใหม่สไตล์มินิมอล",
+            "10 อันดับของกินในเซเว่นที่ต้องลองปี 2026",
+            "สตรีมสด: เล่นเกมเอาชีวิตรอดในเกาะร้างกับเพื่อนๆ",
+            "คลิปตลกขำขัน รวมเรื่องฮาประจำสัปดาห์ #Shorts",
+            "รีวิวแกะกล่องสมาร์ทโฟนรุ่นสเปกแรงราคาสุดคุ้ม"
+        ];
+
+        const rawTimes = ["เมื่อสักครู่", "1 นาทีที่แล้ว", "2 นาทีที่แล้ว", "3 นาทีที่แล้ว", "5 นาทีที่แล้ว"];
 
         const dayLabels = ['จ.', 'อ.', 'พ.', 'พฤ.', 'ศ.', 'ส.', 'อา.'];
 
@@ -104,48 +117,59 @@
             });
         }
 
-        // 🔄 4. ฟังก์ชันจัดการการเลื่อนข้อมูลสถานะการดูสด (ค้าง 2 วิแล้วเลื่อนขึ้น)
+        // 🔄 4. ฟังก์ชันสุ่มไอเทมจาก Array
+        function getRandomItem(array) {
+            return array[Math.floor(Math.random() * array.length)];
+        }
+
+        // 🛠️ 5. ฟังก์ชันสร้าง HTML ของแถวกิจกรรมจากการสุ่ม
+        function createTickerItemHTML() {
+            const randomUser = getRandomItem(rawUsers);
+            const randomVideo = getRandomItem(rawVideos);
+            const randomTime = getRandomItem(rawTimes);
+
+            return `
+                <div class="ticker-item">
+                    <div class="user-name">👤 ${randomUser}</div>
+                    <div class="video-title">🎬 กำลังรับชม: <span>${randomVideo}</span></div>
+                    <div class="activity-time">⏱️ ${randomTime}</div>
+                </div>
+            `;
+        }
+
+        // 🔄 6. ฟังก์ชันจัดการสร้างและสไลด์แบบสุ่มตลอดเวลา
         function initActivityTicker() {
             const ticker = document.getElementById('ticker-container');
             ticker.innerHTML = '';
 
-            // นำข้อมูลไปสร้างเป็น List รายการในหน้าเว็บ
-            watchingActivities.forEach(item => {
-                ticker.innerHTML += `
-                    <div class="ticker-item">
-                        <div class="user-name">👤 ${item.user}</div>
-                        <div class="video-title">🎬 กำลังรับชม: <span>${item.video}</span></div>
-                        <div class="activity-time">⏱️ ${item.time}</div>
-                    </div>
-                `;
-            });
+            // สร้างไอเทมเริ่มต้นไว้ 2 ชิ้นก่อน (ชิ้นที่แสดงอยู่ กับ ชิ้นถัดไปที่จ่อรออยู่ด้านล่าง)
+            ticker.innerHTML += createTickerItemHTML();
+            ticker.innerHTML += createTickerItemHTML();
 
-            // ทำการ Clone ไอเทมแรกไปต่อท้ายเพื่อความนุ่มนวลตอนวนลูปกลับ
-            if(watchingActivities.length > 0) {
-                const firstClone = ticker.children[0].cloneNode(true);
-                ticker.appendChild(firstClone);
-            }
-
-            let currentIndex = 0;
-            const itemHeight = 60; // ความสูงของแต่ละแถว (ต้องล้อตาม CSS)
+            const itemHeight = 60; // ความสูงต่อแถว
 
             setInterval(() => {
-                currentIndex++;
+                // 1. สั่งให้สไลด์เลื่อนขึ้น 1 แถว
                 ticker.style.transition = "transform 0.5s ease-in-out";
-                ticker.style.transform = `translateY(-${currentIndex * itemHeight}px)`;
+                ticker.style.transform = `translateY(-${itemHeight}px)`;
 
-                // ถ้าเลื่อนถึงตัวสุดท้าย (ตัวที่โคลนไว้) ให้แอบวาร์ปกลับไปเริ่มตัวที่ 0 แบบเนียนๆ
-                if (currentIndex >= watchingActivities.length) {
-                    setTimeout(() => {
-                        ticker.style.transition = "none";
-                        currentIndex = 0;
-                        ticker.style.transform = `translateY(0px)`;
-                    }, 500); // รอให้แอนิเมชันเลื่อนขึ้นจบก่อนค่อยวาร์ปกลับ
-                }
-            }, 2500); // 2500ms = ค้างไว้ 2 วินาที + ใช้เวลาเลื่อนขึ้นอีก 0.5 วินาทีให้ดูสมูท
+                // 2. หลังจากแอนิเมชันเลื่อนขึ้นเสร็จสิ้น (ใช้เวลา 0.5 วินาที)
+                setTimeout(() => {
+                    // ลบไอเทมบนสุดที่เพิ่งเลื่อนหายไปออก
+                    ticker.removeChild(ticker.children[0]);
+                    
+                    // ปิดแอนิเมชันชั่วคราว แล้วดีดตัว container กลับมาตำแหน่งเดิม (เพื่อรอเลื่อนครั้งต่อไป)
+                    ticker.style.transition = "none";
+                    ticker.style.transform = `translateY(0px)`;
+                    
+                    // สุ่มสร้างไอเทมใหม่เข้าไปต่อคิวด้านล่างสุดแบบ Real-time 
+                    ticker.innerHTML += createTickerItemHTML();
+                }, 500);
+
+            }, 2500); // วนลูปทุก 2.5 วินาที (ค้างไว้ 2 วินาที + เล่นแอนิเมชันเลื่อนขึ้น 0.5 วินาที)
         }
 
-        // ⏱️ 5. ระบบเวลา Real-time ด้านบน
+        // ⏱️ 7. ระบบเวลา Real-time ด้านบน
         let totalSecondsToday = 28450; 
         function updateLiveTime() {
             totalSecondsToday += Math.floor(Math.random() * 3) + 1; 
