@@ -18,69 +18,139 @@
             <div class="update-status">ข้อมูลอัปเดตแบบ Real-time</div>
         </header>
 
-        <!-- แผงเวลารวมวันนี้ -->
-        <div class="today-overview-box">
-            <div class="today-info">
-                <h2>เวลาเข้าชมรวมวันนี้ (Today's Total Watch Time)</h2>
-                <div class="total-time" id="live-total-time">00 ชม. 00 น. 00 ว.</div>
+        <!-- 🏠 หน้าหลัก Dashboard (Main View) -->
+        <div id="main-view">
+            <!-- แผงเวลารวมวันนี้ -->
+            <div class="today-overview-box">
+                <div class="today-info">
+                    <h2>เวลาเข้าชมรวมวันนี้ (Today's Total Watch Time)</h2>
+                    <div class="total-time" id="live-total-time">00 ชม. 00 น. 00 ว.</div>
+                </div>
+                <div class="today-date">
+                    <div id="current-date">วันที่โหลดข้อมูล...</div>
+                    <div id="current-time">00:00:00</div>
+                </div>
             </div>
-            <div class="today-date">
-                <div id="current-date">วันที่โหลดข้อมูล...</div>
-                <div id="current-time">00:00:00</div>
-            </div>
-        </div>
 
-        <!-- โซนการ์ด 4 หมวดหมู่ -->
-        <div class="category-grid" id="category-grid-container"></div>
+            <!-- โซนการ์ด 4 หมวดหมู่ -->
+            <div class="category-grid" id="category-grid-container"></div>
 
-        <!-- 🔥 เพิ่มส่วนแสดงสถานะการดูสดด้านล่าง (Live Watching Status) -->
-        <div class="live-activity-box">
-            <div class="activity-header">
-                <span class="live-dot"></span> สถานะการเข้าชมล่าสุด (Live Activity)
-            </div>
-            <div class="ticker-wrapper">
-                <div class="ticker-container" id="ticker-container">
-                    <!-- ข้อมูลจะถูกดึงมาใส่และเลื่อนตรงนี้โดย JavaScript -->
+            <!-- กล่องแสดงสถานะการดูสดด้านล่าง -->
+            <div class="live-activity-box">
+                <div class="activity-header">
+                    <span class="live-dot"></span> สถานะการเข้าชมล่าสุด (Live Activity)
+                </div>
+                <div class="ticker-wrapper">
+                    <div class="ticker-container" id="ticker-container"></div>
                 </div>
             </div>
         </div>
+
+        <!-- 🔍 หน้ารายละเอียด (Detail View - จะแสดงเมื่อกดคลิกที่การ์ด) -->
+        <div id="detail-view" class="hidden">
+            <button class="back-btn" onclick="showMainView()">← ย้อนกลับหน้าหลัก</button>
+
+            <div class="detail-header-card" id="detail-header">
+                <!-- ข้อมูลหัวข้อหมวดหมู่จะใส่ผ่าน JavaScript -->
+            </div>
+
+            <div class="detail-grid">
+                <!-- กล่องรายการ Top Videos -->
+                <div class="detail-card">
+                    <h3>🎬 5 อันดับคลิปที่รับชมมากที่สุด</h3>
+                    <div class="top-list" id="top-videos-list">
+                        <!-- รายชื่อคลิปจะใส่ผ่าน JavaScript -->
+                    </div>
+                </div>
+
+                <!-- กล่องสถิติย่อย -->
+                <div class="detail-card">
+                    <h3>📊 สถิติการรับชมเชิงลึก</h3>
+                    <div class="stats-summary" id="stats-summary">
+                        <!-- รายละเอียดสถิติจะใส่ผ่าน JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
-!-- JavaScript สำหรับคำนวณกราฟ สุ่มกิจกรรม และนับเวลา Real-time -->
     <script>
-        // 📊 1. ชุดข้อมูลสถิติของกราฟ (เหมือนเดิม)
+        // 📊 1. ชุดข้อมูลสถิติของแต่ละหมวดหมู่ (พร้อมข้อมูลเชิงลึกสำหรับ Detail View)
         const youtubeData = [
-            { key: 'music', title: 'ดนตรี (Music)', badge: 'เพลง & มิวสิควิดีโอ', dailyHours: [6, 4.5, 5, 7.5, 9, 4, 6.2] },
-            { key: 'live', title: 'ไลฟ์สด (Live Stream)', badge: 'สตรีมมิ่ง & เกม', dailyHours: [5, 7.5, 4, 8.2, 12, 16, 15.7] },
-            { key: 'news', title: 'ข่าว (News & Blogs)', badge: 'สาระ & ทันเหตุการณ์', dailyHours: [3.5, 3, 2.5, 2, 1.8, 2.8, 2.6] },
-            { key: 'shorts', title: 'คลิปสั้น (Shorts)', badge: 'บันเทิงแบบเร่งด่วน', dailyHours: [3.2, 4.1, 5.5, 2.9, 4, 4.8, 4.5] }
+            { 
+                key: 'music', 
+                title: 'ดนตรี (Music)', 
+                badge: 'เพลง & มิวสิควิดีโอ', 
+                dailyHours: [6, 4.5, 5, 7.5, 9, 4, 6.2],
+                topVideos: [
+                    { name: "Official MV - ซิงเกิ้ลใหม่ล่าสุดดนตรีป็อป", views: 24, duration: "12 ชม. 40 น." },
+                    { name: "Lofi Hip Hop Radio - Beats to Relax/Study to", views: 18, duration: "8 ชม. 15 น." },
+                    { name: "รวมฮิตเพลงอินดี้สากล ฟังชิลๆ ยามบ่าย", views: 12, duration: "5 ชม. 30 น." },
+                    { name: "Live Acoustic Session - ศิลปินดังร้องสด", views: 9, duration: "3 ชม. 50 น." },
+                    { name: "รวมเพลงฮิตติดชาตปี 2026", views: 7, duration: "2 ชม. 10 น." }
+                ],
+                avgDaily: "6.0 ชม./วัน",
+                peakDay: "วันศุกร์ (9 ชม.)",
+                totalVideosWatched: "142 คลิป"
+            },
+            { 
+                key: 'live', 
+                title: 'ไลฟ์สด (Live Stream)', 
+                badge: 'สตรีมมิ่ง & เกม', 
+                dailyHours: [5, 7.5, 4, 8.2, 12, 16, 15.7],
+                topVideos: [
+                    { name: "LIVE: แข่งขัน Esport รอบชิงชนะเลิศประจำปี", views: 15, duration: "22 ชม. 10 น." },
+                    { name: "สตรีมสด: เล่นเกมเอาชีวิตรอดในเกาะร้างกับเพื่อนๆ", views: 11, duration: "18 ชม. 00 น." },
+                    { name: "คุยสบายๆ ยามดึก ตอบคำถามแฟนคลับ", views: 8, duration: "12 ชม. 30 น." },
+                    { name: "Live สดทำอาหารเมนูพิเศษต้อนรับวันหยุด", views: 5, duration: "6 ชม. 15 น." },
+                    { name: "สตรีมวาดรูป Speed Painting ถ่ายทอดสด", views: 4, duration: "4 ชม. 20 น." }
+                ],
+                avgDaily: "9.7 ชม./วัน",
+                peakDay: "วันเสาร์ (16 ชม.)",
+                totalVideosWatched: "58 สตรีม"
+            },
+            { 
+                key: 'news', 
+                title: 'ข่าว (News & Blogs)', 
+                badge: 'สาระ & ทันเหตุการณ์', 
+                dailyHours: [3.5, 3, 2.5, 2, 1.8, 2.8, 2.6],
+                topVideos: [
+                    { name: "สรุปข่าวเด่นรอบวัน สาระเด่นประเด็นร้อน", views: 32, duration: "6 ชม. 20 น." },
+                    { name: "วิเคราะห์เทคโนโลยี AI และไอทีปี 2026", views: 14, duration: "4 ชม. 10 น." },
+                    { name: "สารคดี: ความลับของมหาสมุทรลึก", views: 8, duration: "3 ชม. 00 น." },
+                    { name: "เจาะลึกเศรษฐกิจโลก ไตรมาสที่ 2", views: 6, duration: "2 ชม. 15 น." },
+                    { name: "รายการทอล์คโชว์สัมภาษณ์แขกรับเชิญพิเศษ", views: 5, duration: "1 ชม. 45 น." }
+                ],
+                avgDaily: "2.6 ชม./วัน",
+                peakDay: "วันจันทร์ (3.5 ชม.)",
+                totalVideosWatched: "95 คลิป"
+            },
+            { 
+                key: 'shorts', 
+                title: 'คลิปสั้น (Shorts)', 
+                badge: 'บันเทิงแบบเร่งด่วน', 
+                dailyHours: [3.2, 4.1, 5.5, 2.9, 4, 4.8, 4.5],
+                topVideos: [
+                    { name: "ล้างตู้เย็นยังไงให้สะอาดภายใน 60 วินาที #Shorts", views: 85, duration: "4 ชม. 30 น." },
+                    { name: "คลิปตลกขำขัน รวมเรื่องฮาประจำสัปดาห์ #Shorts", views: 72, duration: "4 ชม. 10 น." },
+                    { name: "เมนูไข่ง่ายๆ ทำได้ใน 1 นาที #Shorts", views: 60, duration: "3 ชม. 20 น." },
+                    { name: "เทคนิคการตั้งค่าโทรศัพท์ให้ลื่นขึ้น #Shorts", views: 45, duration: "2 ชม. 50 น." },
+                    { name: "ทริคการจัดโต๊ะคอมให้สบายตา #Shorts", views: 38, duration: "2 ชม. 15 น." }
+                ],
+                avgDaily: "4.1 ชม./วัน",
+                peakDay: "วันพุธ (5.5 ชม.)",
+                totalVideosWatched: "520 คลิป"
+            }
         ];
 
-        // 🎲 2. คลังข้อมูลดิบสำหรับสุ่ม (เพิ่ม/ลด รายชื่อหรือคลิปตรงนี้ได้เลย)
-        const rawUsers = [
-            "สมชาย สายลุย", "มินตรา น่ารัก", "กิตติพงษ์ วงศ์คำ", "ณัฐชา พาเพลิน", 
-            "ธนกร ยอดนักสตรีม", "อนันต์ เปี่ยมดี", "ศิริพร สอนง่าย", "วีรชัย ชัยชนะ",
-            "พีรพล แซ่ลี้", "ชลลดา ตาหวาน"
-        ];
-
-        const rawVideos = [
-            "LIVE: แข่งขัน Esport รอบชิงชนะเลิศประจำปี",
-            "Official MV - ซิงเกิ้ลใหม่ล่าสุดดนตรีป็อป",
-            "สรุปข่าวเด่นรอบวัน สาระเด่นประเด็นร้อน",
-            "ล้างตู้เย็นยังไงให้สะอาดภายใน 60 วินาที #Shorts",
-            "สอนเขียนโค้ด HTML CSS ฉบับมือใหม่เข้าใจง่าย",
-            "VLOG: พาทัวร์คาเฟ่เปิดใหม่สไตล์มินิมอล",
-            "10 อันดับของกินในเซเว่นที่ต้องลองปี 2026",
-            "สตรีมสด: เล่นเกมเอาชีวิตรอดในเกาะร้างกับเพื่อนๆ",
-            "คลิปตลกขำขัน รวมเรื่องฮาประจำสัปดาห์ #Shorts",
-            "รีวิวแกะกล่องสมาร์ทโฟนรุ่นสเปกแรงราคาสุดคุ้ม"
-        ];
-
-        const rawTimes = ["เมื่อสักครู่", "1 นาทีที่แล้ว", "2 นาทีที่แล้ว", "3 นาทีที่แล้ว", "5 นาทีที่แล้ว"];
-
+        // 🎲 2. คลังข้อมูลสำหรับสุ่มสถานะดูสดด้านล่าง
+        const rawUsers = ["สมชาย สายลุย", "มินตรา น่ารัก", "กิตติพงษ์ วงศ์คำ", "ณัฐชา พาเพลิน", "ธนกร ยอดนักสตรีม", "อนันต์ เปี่ยมดี", "ศิริพร สอนง่าย", "วีรชัย ชัยชนะ"];
+        const rawVideos = ["LIVE: แข่งขัน Esport รอบชิงชนะเลิศ", "Official MV - ซิงเกิ้ลใหม่ล่าสุด", "สรุปข่าวเด่นรอบวัน สาระเด่น", "สอนเขียนโค้ด HTML CSS ฉบับมือใหม่", "10 อันดับของกินในเซเว่น"];
+        const rawTimes = ["เมื่อสักครู่", "1 นาทีที่แล้ว", "2 นาทีที่แล้ว", "3 นาทีที่แล้ว"];
         const dayLabels = ['จ.', 'อ.', 'พ.', 'พฤ.', 'ศ.', 'ส.', 'อา.'];
 
-        // 🛠️ 3. ฟังก์ชันสร้างการ์ดกราฟอัตโนมัติ
+        // 🛠️ 3. วาดการ์ดหน้าหลัก (เพิ่ม onclick เปิดหน้ารายละเอียด)
         function renderDashboard() {
             const container = document.getElementById('category-grid-container');
             container.innerHTML = '';
@@ -101,8 +171,9 @@
                     `;
                 });
 
+                // ใส่ onclick="showDetail('${cat.key}')" เพื่อให้คลิกแล้วเปิดหน้ารายละเอียด
                 container.innerHTML += `
-                    <div class="category-card ${cat.key}">
+                    <div class="category-card ${cat.key}" onclick="showDetail('${cat.key}')" style="cursor: pointer;">
                         <div class="card-header">
                             <div class="card-title">${cat.title}</div>
                             <span class="badge">${cat.badge}</span>
@@ -117,59 +188,101 @@
             });
         }
 
-        // 🔄 4. ฟังก์ชันสุ่มไอเทมจาก Array
-        function getRandomItem(array) {
-            return array[Math.floor(Math.random() * array.length)];
+        // 🔍 4. ฟังก์ชันแสดงหน้ารายละเอียด (Detail View)
+        function showDetail(categoryKey) {
+            const data = youtubeData.find(item => item.key === categoryKey);
+            if (!data) return;
+
+            const totalHours = data.dailyHours.reduce((a, b) => a + b, 0);
+            const fullHours = Math.floor(totalHours);
+            const minutes = Math.round((totalHours - fullHours) * 60);
+
+            // ใส่ข้อมูล Header หน้ารายละเอียด
+            document.getElementById('detail-header').className = `detail-header-card ${data.key}`;
+            document.getElementById('detail-header').innerHTML = `
+                <div>
+                    <span class="badge">${data.badge}</span>
+                    <h2 style="font-size: 2rem; margin-top: 0.5rem;">${data.title}</h2>
+                    <p style="color: var(--text-gray); margin-top: 0.3rem;">ข้อมูลการรับชมเชิงลึกในรอบ 7 วันที่ผ่านมา</p>
+                </div>
+                <div style="text-align: right;">
+                    <div style="font-size: 0.9rem; color: var(--text-gray);">เวลารวมทั้งหมด</div>
+                    <div style="font-size: 2.2rem; font-weight: 700; color: var(--pure-white);">${fullHours} ชม. ${minutes} น.</div>
+                </div>
+            `;
+
+            // ใส่รายการ Top 5 Videos
+            const topListContainer = document.getElementById('top-videos-list');
+            topListContainer.innerHTML = '';
+            data.topVideos.forEach((vid, index) => {
+                topListContainer.innerHTML += `
+                    <div class="top-item">
+                        <div class="rank">${index + 1}</div>
+                        <div class="vid-info">
+                            <div class="vid-title">${vid.name}</div>
+                            <div class="vid-meta">จำนวนครั้งที่เปิด: ${vid.views} ครั้ง</div>
+                        </div>
+                        <div class="vid-duration">${vid.duration}</div>
+                    </div>
+                `;
+            });
+
+            // ใส่สรุปสถิติย่อย
+            document.getElementById('stats-summary').innerHTML = `
+                <div class="stat-box">
+                    <div class="stat-label">เฉลี่ยเวลาต่อวัน</div>
+                    <div class="stat-value">${data.avgDaily}</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">วันที่รับชมมากที่สุด</div>
+                    <div class="stat-value">${data.peakDay}</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">จำนวนวิดีโอที่รับชม</div>
+                    <div class="stat-value">${data.totalVideosWatched}</div>
+                </div>
+            `;
+
+            // สลับหน้าจอ
+            document.getElementById('main-view').classList.add('hidden');
+            document.getElementById('detail-view').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // 🛠️ 5. ฟังก์ชันสร้าง HTML ของแถวกิจกรรมจากการสุ่ม
-        function createTickerItemHTML() {
-            const randomUser = getRandomItem(rawUsers);
-            const randomVideo = getRandomItem(rawVideos);
-            const randomTime = getRandomItem(rawTimes);
+        // 🏠 5. ฟังก์ชันกดกลับหน้าหลัก
+        function showMainView() {
+            document.getElementById('detail-view').classList.add('hidden');
+            document.getElementById('main-view').classList.remove('hidden');
+        }
 
+        // 🔄 6. ระบบสุ่มสถานะ Live Activity ด้านล่าง
+        function getRandomItem(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+        function createTickerItemHTML() {
             return `
                 <div class="ticker-item">
-                    <div class="user-name">👤 ${randomUser}</div>
-                    <div class="video-title">🎬 กำลังรับชม: <span>${randomVideo}</span></div>
-                    <div class="activity-time">⏱️ ${randomTime}</div>
+                    <div class="user-name">👤 ${getRandomItem(rawUsers)}</div>
+                    <div class="video-title">🎬 กำลังรับชม: <span>${getRandomItem(rawVideos)}</span></div>
+                    <div class="activity-time">⏱️ ${getRandomItem(rawTimes)}</div>
                 </div>
             `;
         }
-
-        // 🔄 6. ฟังก์ชันจัดการสร้างและสไลด์แบบสุ่มตลอดเวลา
         function initActivityTicker() {
             const ticker = document.getElementById('ticker-container');
-            ticker.innerHTML = '';
-
-            // สร้างไอเทมเริ่มต้นไว้ 2 ชิ้นก่อน (ชิ้นที่แสดงอยู่ กับ ชิ้นถัดไปที่จ่อรออยู่ด้านล่าง)
-            ticker.innerHTML += createTickerItemHTML();
-            ticker.innerHTML += createTickerItemHTML();
-
-            const itemHeight = 60; // ความสูงต่อแถว
-
+            ticker.innerHTML = createTickerItemHTML() + createTickerItemHTML();
+            const itemHeight = 60;
             setInterval(() => {
-                // 1. สั่งให้สไลด์เลื่อนขึ้น 1 แถว
                 ticker.style.transition = "transform 0.5s ease-in-out";
                 ticker.style.transform = `translateY(-${itemHeight}px)`;
-
-                // 2. หลังจากแอนิเมชันเลื่อนขึ้นเสร็จสิ้น (ใช้เวลา 0.5 วินาที)
                 setTimeout(() => {
-                    // ลบไอเทมบนสุดที่เพิ่งเลื่อนหายไปออก
                     ticker.removeChild(ticker.children[0]);
-                    
-                    // ปิดแอนิเมชันชั่วคราว แล้วดีดตัว container กลับมาตำแหน่งเดิม (เพื่อรอเลื่อนครั้งต่อไป)
                     ticker.style.transition = "none";
                     ticker.style.transform = `translateY(0px)`;
-                    
-                    // สุ่มสร้างไอเทมใหม่เข้าไปต่อคิวด้านล่างสุดแบบ Real-time 
                     ticker.innerHTML += createTickerItemHTML();
                 }, 500);
-
-            }, 2500); // วนลูปทุก 2.5 วินาที (ค้างไว้ 2 วินาที + เล่นแอนิเมชันเลื่อนขึ้น 0.5 วินาที)
+            }, 2500);
         }
 
-        // ⏱️ 7. ระบบเวลา Real-time ด้านบน
+        // ⏱️ 7. เวลา Real-time ด้านบน
         let totalSecondsToday = 28450; 
         function updateLiveTime() {
             totalSecondsToday += Math.floor(Math.random() * 3) + 1; 
@@ -186,7 +299,7 @@
             document.getElementById('current-time').innerText = now.toLocaleTimeString('th-TH');
         }
 
-        // สั่งเปิดตัวทำงานทั้งหมด
+        // เริ่มทำงาน
         renderDashboard();
         initActivityTicker();
         setInterval(updateLiveTime, 1000);
