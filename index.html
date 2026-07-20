@@ -18,10 +18,11 @@
         <header>
             <div class="header-left">
                 <h1>YT Viewer <span>Analytics</span></h1>
-                <!-- 🔘 แถบเมนูด้านบนสำหรับสลับหน้า -->
+                <!-- 🔘 แถบเมนูด้านบนสำหรับสลับหน้า (เพิ่มแถบประวัติ) -->
                 <nav class="nav-tabs">
                     <button class="tab-btn active" onclick="switchTab('overview')">📊 ภาพรวม (Overview)</button>
                     <button class="tab-btn" onclick="switchTab('trend')">📈 แนวโน้มเปรียบเทียบ (Trends)</button>
+                    <button class="tab-btn" onclick="switchTab('history')">📜 ประวัติการรับชม (History)</button>
                 </nav>
             </div>
             <div class="update-status">ข้อมูลอัปเดตแบบ Real-time</div>
@@ -71,7 +72,27 @@
             </div>
         </div>
 
-        <!-- 🔍 3. หน้ารายละเอียด (Detail View - จะแสดงเมื่อกดคลิกที่การ์ด) -->
+        <!-- 📜 3. หน้าประวัติการรับชม (History Log Container - Auto Scrolling) -->
+        <div id="history-tab" class="tab-content hidden">
+            <div class="history-main-card">
+                <div class="history-header">
+                    <div>
+                        <h2>📜 ประวัติการรับชมแบบเรียลไทม์ (Live Stream History Feed)</h2>
+                        <p>บันทึกการรับชมวิดีโอจากผู้ใช้งานทั้งหมด (ข้อมูลสุ่มอัปเดตและเลื่อนขึ้นอัตโนมัติ)</p>
+                    </div>
+                    <div class="history-badge">● LIVE STREAMING</div>
+                </div>
+
+                <!-- กล่องสี่เหลี่ยมขนาดใหญ่แสดงประวัติแบบเลื่อนขึ้นอัตโนมัติ -->
+                <div class="history-feed-viewport" id="history-viewport">
+                    <div class="history-feed-list" id="history-feed-list">
+                        <!-- รายการประวัติจะถูกสร้างผ่าน JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 🔍 4. หน้ารายละเอียด (Detail View - แสดงเมื่อคลิกการ์ดหมวดหมู่) -->
         <div id="detail-view" class="tab-content hidden">
             <button class="back-btn" onclick="showMainView()">← ย้อนกลับหน้าหลัก</button>
 
@@ -93,7 +114,7 @@
     </div>
 
     <script>
-        // 📊 1. ชุดข้อมูลสถิติ
+        // 📊 1. ชุดข้อมูลหลัก
         const youtubeData = [
             { 
                 key: 'music', title: 'ดนตรี (Music)', badge: 'เพลง & มิวสิควิดีโอ', color: '#3b82f6',
@@ -146,9 +167,9 @@
         ];
 
         const dayLabels = ['จันทร์', 'อังคาร', 'พุธ', 'พฤหัสบดี', 'ศุกร์', 'เสาร์', 'อาทิตย์'];
-        let trendsChartInstance = null; // ตัวแปรเก็บกราฟเส้น
+        let trendsChartInstance = null;
 
-        // 🔘 2. ฟังก์ชันสลับหน้า Tab (Overview vs Trend)
+        // 🔘 2. ระบบสลับหน้า Tab (Overview, Trend, History)
         function switchTab(tabName) {
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));
@@ -159,65 +180,48 @@
             } else if (tabName === 'trend') {
                 document.querySelectorAll('.tab-btn')[1].classList.add('active');
                 document.getElementById('trend-tab').classList.remove('hidden');
-                renderLineChart(); // วาดกราฟเส้นเมื่อสลับมาหน้า Trend
+                renderLineChart();
+            } else if (tabName === 'history') {
+                document.querySelectorAll('.tab-btn')[2].classList.add('active');
+                document.getElementById('history-tab').classList.remove('hidden');
+                initHistoryFeed();
             }
         }
 
-        // 📈 3. ฟังก์ชันวาดกราฟเส้นด้วย Chart.js
+        // 📈 3. วาดกราฟเส้น Chart.js
         function renderLineChart() {
-            if (trendsChartInstance) {
-                trendsChartInstance.destroy(); // เคลียร์กราฟเก่าก่อนวาดใหม่
-            }
+            if (trendsChartInstance) trendsChartInstance.destroy();
 
             const ctx = document.getElementById('trendsLineChart').getContext('2d');
-            
-            // แปลงข้อมูลจาก youtubeData ไปเป็น datasets ของ Chart.js
             const datasets = youtubeData.map(cat => ({
                 label: cat.title,
                 data: cat.dailyHours,
                 borderColor: cat.color,
-                backgroundColor: cat.color + '20', // เพิ่มความโปร่งแสง
+                backgroundColor: cat.color + '20',
                 borderWidth: 3,
-                tension: 0.3, // ทำให้เส้นโค้งมนสมูท
+                tension: 0.3,
                 pointRadius: 5,
                 pointHoverRadius: 8
             }));
 
             trendsChartInstance = new Chart(ctx, {
                 type: 'line',
-                data: {
-                    labels: dayLabels,
-                    datasets: datasets
-                },
+                data: { labels: dayLabels, datasets: datasets },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: {
-                            labels: {
-                                color: '#f8fafc',
-                                font: { family: 'Sarabun', size: 14 }
-                            }
-                        },
+                        legend: { labels: { color: '#f8fafc', font: { family: 'Sarabun', size: 14 } } },
                         tooltip: {
                             callbacks: {
-                                label: function(context) {
-                                    return ` ${context.dataset.label}: ${context.raw} ชม.`;
-                                }
+                                label: function(context) { return ` ${context.dataset.label}: ${context.raw} ชม.`; }
                             }
                         }
                     },
                     scales: {
-                        x: {
-                            ticks: { color: '#94a3b8', font: { family: 'Sarabun' } },
-                            grid: { color: '#334155' }
-                        },
+                        x: { ticks: { color: '#94a3b8', font: { family: 'Sarabun' } }, grid: { color: '#334155' } },
                         y: {
-                            ticks: { 
-                                color: '#94a3b8', 
-                                font: { family: 'Sarabun' },
-                                callback: function(value) { return value + ' ชม.'; }
-                            },
+                            ticks: { color: '#94a3b8', font: { family: 'Sarabun' }, callback: function(val) { return val + ' ชม.'; } },
                             grid: { color: '#334155' }
                         }
                     }
@@ -225,7 +229,85 @@
             });
         }
 
-        // 🛠️ 4. วาดการ์ดหน้าหลัก
+        // 📜 4. ระบบสร้างและเลื่อนประวัติการรับชมอัตโนมัติ (History Feed)
+        const mockUsers = ["สมชาย สายลุย", "มินตรา น่ารัก", "กิตติพงษ์ วงศ์คำ", "ณัฐชา พาเพลิน", "ธนกร ยอดนักสตรีม", "อนันต์ เปี่ยมดี", "ศิริพร สอนง่าย", "วีรชัย ชัยชนะ", "กานดา พารวย", "ภานุวัฒน์ สุดเก่ง"];
+        const mockCategories = [
+            { name: "ดนตรี", color: "#3b82f6" },
+            { name: "ไลฟ์สด", color: "#ef4444" },
+            { name: "ข่าวสาร", color: "#10b981" },
+            { name: "Shorts", color: "#eab308" }
+        ];
+        const mockVideoTitles = [
+            "Official MV - ซิงเกิ้ลใหม่ล่าสุดดนตรีป็อป",
+            "LIVE: แข่งขัน Esport รอบชิงชนะเลิศประจำปี",
+            "สรุปข่าวเด่นรอบวัน สาระเด่นประเด็นร้อน",
+            "ล้างตู้เย็นยังไงให้สะอาดภายใน 60 วินาที #Shorts",
+            "Lofi Hip Hop Radio - Beats to Relax/Study to",
+            "สอนเขียนโค้ด HTML CSS ฉบับมือใหม่เข้าใจง่าย",
+            "สตรีมสด: เล่นเกมเอาชีวิตรอดในเกาะร้าง",
+            "วิเคราะห์เทคโนโลยี AI และไอทีปี 2026",
+            "เมนูไข่ง่ายๆ ทำได้ใน 1 นาที #Shorts",
+            "10 อันดับของกินในเซเว่นที่ต้องลอง"
+        ];
+
+        function getRandomElement(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+        function generateHistoryItem() {
+            const user = getRandomElement(mockUsers);
+            const category = getRandomElement(mockCategories);
+            const title = getRandomElement(mockVideoTitles);
+            const now = new Date();
+            const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
+            const watchDuration = Math.floor(Math.random() * 45) + 5; // 5 ถึง 50 นาที
+
+            const div = document.createElement('div');
+            div.className = 'history-item-card';
+            div.innerHTML = `
+                <div class="history-user">
+                    <div class="user-avatar">${user.charAt(0)}</div>
+                    <div>
+                        <div class="user-name">${user}</div>
+                        <div class="history-time">⏱️ เวลา ${timeStr} น.</div>
+                    </div>
+                </div>
+                <div class="history-content">
+                    <span class="history-category-tag" style="background-color: ${category.color}20; color: ${category.color}; border: 1px solid ${category.color}50;">
+                        ${category.name}
+                    </span>
+                    <div class="history-video-title">🎬 ${title}</div>
+                </div>
+                <div class="history-duration">
+                    รับชมไป ${watchDuration} นาที
+                </div>
+            `;
+            return div;
+        }
+
+        let historyInterval = null;
+        let isHistoryInit = false;
+
+        function initHistoryFeed() {
+            const list = document.getElementById('history-feed-list');
+            if (!isHistoryInit) {
+                // สร้างข้อมูลตั้งต้น 15 รายการ
+                for (let i = 0; i < 15; i++) {
+                    list.appendChild(generateHistoryItem());
+                }
+                isHistoryInit = true;
+
+                // สุ่มเพิ่มประวัติใหม่ขึ้นมาทุกๆ 2.5 วินาที
+                setInterval(() => {
+                    const newItem = generateHistoryItem();
+                    list.appendChild(newItem);
+                    // ลบรายการเก่าสุดทิ้งหากรายการมีมากกว่า 50 เพื่อป้องกันปัญหาความจำ
+                    if (list.children.length > 50) {
+                        list.removeChild(list.children[0]);
+                    }
+                }, 2500);
+            }
+        }
+
+        // 🛠️ 5. วาดการ์ดหน้าหลัก
         function renderDashboard() {
             const container = document.getElementById('category-grid-container');
             container.innerHTML = '';
@@ -262,7 +344,7 @@
             });
         }
 
-        // 🔍 5. หน้ารายละเอียด Detail View
+        // 🔍 6. หน้ารายละเอียด Detail View
         function showDetail(categoryKey) {
             const data = youtubeData.find(item => item.key === categoryKey);
             if (!data) return;
@@ -313,18 +395,17 @@
             switchTab('overview');
         }
 
-        // 🔄 6. ระบบสุ่ม Live Activity
+        // 🔄 7. ระบบสุ่ม Live Activity แถบด้านล่าง
         const rawUsers = ["สมชาย สายลุย", "มินตรา น่ารัก", "กิตติพงษ์ วงศ์คำ", "ณัฐชา พาเพลิน", "ธนกร ยอดนักสตรีม", "อนันต์ เปี่ยมดี", "ศิริพร สอนง่าย"];
         const rawVideos = ["LIVE: แข่งขัน Esport รอบชิงชนะเลิศ", "Official MV - ซิงเกิ้ลใหม่ล่าสุด", "สรุปข่าวเด่นรอบวัน สาระเด่น", "สอนเขียนโค้ด HTML CSS ฉบับมือใหม่"];
         const rawTimes = ["เมื่อสักครู่", "1 นาทีที่แล้ว", "2 นาทีที่แล้ว", "3 นาทีที่แล้ว"];
         
-        function getRandomItem(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
         function createTickerItemHTML() {
             return `
                 <div class="ticker-item">
-                    <div class="user-name">👤 ${getRandomItem(rawUsers)}</div>
-                    <div class="video-title">🎬 กำลังรับชม: <span>${getRandomItem(rawVideos)}</span></div>
-                    <div class="activity-time">⏱️ ${getRandomItem(rawTimes)}</div>
+                    <div class="user-name">👤 ${getRandomElement(rawUsers)}</div>
+                    <div class="video-title">🎬 กำลังรับชม: <span>${getRandomElement(rawVideos)}</span></div>
+                    <div class="activity-time">⏱️ ${getRandomElement(rawTimes)}</div>
                 </div>
             `;
         }
@@ -344,7 +425,7 @@
             }, 2500);
         }
 
-        // ⏱️ 7. เวลา Real-time
+        // ⏱️ 8. เวลา Real-time
         let totalSecondsToday = 28450; 
         function updateLiveTime() {
             totalSecondsToday += Math.floor(Math.random() * 3) + 1; 
