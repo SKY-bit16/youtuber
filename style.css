@@ -265,7 +265,7 @@ header h1 span { color: var(--accent-blue); }
 .chart-header p { color: var(--text-gray); font-size: 0.9rem; margin-top: 0.3rem; }
 .main-chart-wrapper { height: 450px; position: relative; }
 
-/* 📜 History Feed Page Styles */
+/* 📜 History Feed Page Styles (เวอร์ชันไหลลื่น GPU Accelerated) */
 .history-main-card {
     background-color: var(--card-dark-blue);
     border: 1px solid var(--border-color);
@@ -296,35 +296,40 @@ header h1 span { color: var(--accent-blue); }
     letter-spacing: 1px;
 }
 
-/* กล่องสี่เหลี่ยมขนาดใหญ่สำหรับใส่ประวัติการรับชม */
+/* กล่องสี่เหลี่ยมขนาดใหญ่ สโครลได้ด้วยมือ และลื่นไหล */
 .history-feed-viewport {
     height: 520px;
-    overflow: hidden;
+    overflow-y: auto;
     position: relative;
     border-radius: 12px;
     background: rgba(15, 23, 42, 0.6);
     border: 1px solid var(--border-color);
     padding: 1rem;
+    scroll-behavior: smooth;
 }
 
-/* เอฟเฟกต์การค่อยๆ เลื่อนขึ้นอัตโนมัติ */
+/* ตกแต่ง Scrollbar ให้สวยงามเข้ากับ Dark Theme */
+.history-feed-viewport::-webkit-scrollbar {
+    width: 6px;
+}
+.history-feed-viewport::-webkit-scrollbar-track {
+    background: rgba(15, 23, 42, 0.5);
+}
+.history-feed-viewport::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 10px;
+}
+.history-feed-viewport::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-blue);
+}
+
 .history-feed-list {
     display: flex;
     flex-direction: column;
     gap: 0.8rem;
-    animation: scrollUp 40s linear infinite;
 }
 
-/* หยุดเลื่อนเมื่อเมาส์ชี้ */
-.history-feed-viewport:hover .history-feed-list {
-    animation-play-state: paused;
-}
-
-@keyframes scrollUp {
-    0% { transform: translateY(0); }
-    100% { transform: translateY(-50%); }
-}
-
+/* การ์ดประวัติ + CSS Transition เมื่อมีข้อมูลใหม่เข้ามา */
 .history-item-card {
     display: flex;
     align-items: center;
@@ -333,12 +338,27 @@ header h1 span { color: var(--accent-blue); }
     border: 1px solid var(--border-color);
     padding: 1rem 1.2rem;
     border-radius: 10px;
-    transition: transform 0.2s ease, border-color 0.2s ease;
+    opacity: 1;
+    transform: translateY(0);
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform, opacity;
+}
+
+/* สถานะเริ่มต้นก่อนสไลด์ลงมา */
+.history-item-card.new-item {
+    opacity: 0;
+    transform: translateY(-20px);
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    margin: 0;
+    border: none;
+    overflow: hidden;
 }
 
 .history-item-card:hover {
     border-color: var(--accent-blue);
-    transform: scale(1.01);
+    background: #24334a;
 }
 
 .history-user {
