@@ -82,6 +82,7 @@ header h1 span { color: var(--accent-blue); }
 
 .update-status { color: var(--text-gray); font-size: 0.9rem; }
 
+/* Dashboard Total Box */
 .today-overview-box {
     background: linear-gradient(135deg, var(--accent-blue), #1d4ed8);
     color: var(--pure-white);
@@ -116,6 +117,7 @@ header h1 span { color: var(--accent-blue); }
 #current-date { font-weight: 600; }
 #current-time { font-size: 0.85rem; opacity: 0.8; }
 
+/* Category Grid */
 .category-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
