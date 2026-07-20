@@ -18,13 +18,13 @@
         <header>
             <div class="header-left">
                 <h1>YT Viewer <span>Analytics</span></h1>
-                <!-- 🔘 แถบเมนูด้านบนสำหรับสลับหน้า -->
+                <!-- 🔘 แถบเมนูด้านบนสำหรับสลับหน้า (ภาษาไทยล้วน) -->
                 <nav class="nav-tabs">
-                    <button class="tab-btn active" onclick="switchTab('overview', this)">📊 ภาพรวม (Overview)</button>
-                    <button class="tab-btn" onclick="switchTab('trend', this)">📈 แนวโน้มเปรียบเทียบ (Trends)</button>
-                    <button class="tab-btn" onclick="switchTab('top-content', this)">🏆 ยอดฮิต (Top Content)</button>
-                    <button class="tab-btn" onclick="switchTab('behavior', this)">⏰ พฤติกรรม (Behavior)</button>
-                    <button class="tab-btn" onclick="switchTab('history', this)">📜 ประวัติการรับชม (History)</button>
+                    <button class="tab-btn active" onclick="switchTab('overview', this)">📊 ภาพรวม</button>
+                    <button class="tab-btn" onclick="switchTab('trend', this)">📈 แนวโน้มเปรียบเทียบ</button>
+                    <button class="tab-btn" onclick="switchTab('top-content', this)">🏆 ยอดฮิต</button>
+                    <button class="tab-btn" onclick="switchTab('behavior', this)">⏰ พฤติกรรม</button>
+                    <button class="tab-btn" onclick="switchTab('history', this)">📜 ประวัติการรับชม</button>
                 </nav>
             </div>
             <div class="update-status">ข้อมูลอัปเดตแบบ Real-time</div>
@@ -35,7 +35,7 @@
             <!-- แผงเวลารวมวันนี้ -->
             <div class="today-overview-box">
                 <div class="today-info">
-                    <h2>เวลาเข้าชมรวมวันนี้</h2>
+                    <h2>เวลาเข้าชมรวมวันนี้ (TODAY'S TOTAL WATCH TIME)</h2>
                     <div class="total-time" id="live-total-time">00 ชม. 00 น. 00 ว.</div>
                 </div>
                 <div class="today-date">
@@ -50,7 +50,7 @@
             <!-- กล่องแสดงสถานะการดูสดด้านล่าง -->
             <div class="live-activity-box">
                 <div class="activity-header">
-                    <span class="live-dot"></span> สถานะการเข้าชมล่าสุด
+                    <span class="live-dot"></span> สถานะการเข้าชมล่าสุด (Live Activity)
                 </div>
                 <div class="ticker-wrapper">
                     <div class="ticker-container" id="ticker-container"></div>
@@ -63,7 +63,7 @@
             <div class="line-chart-card">
                 <div class="chart-header">
                     <div>
-                        <h2>เปรียบเทียบเวลาเข้าชมย้อนหลัง 7 วัน</h2>
+                        <h2>เปรียบเทียบเวลาเข้าชมย้อนหลัง 7 วัน (7-Day Watch Time Trends)</h2>
                         <p>เปรียบเทียบสถิติชั่วโมงการรับชมแยกตามหมวดหมู่</p>
                     </div>
                 </div>
@@ -103,7 +103,7 @@
                     <!-- 5 อันดับช่อง YouTube โปรด -->
                     <div class="top-content-card">
                         <div class="section-title">
-                            <h2>📺 5 อันดับช่องโปรด</h2>
+                            <h2>📺 5 อันดับช่องโปรด (Top Channels)</h2>
                         </div>
                         <div class="top-channels-list" id="top-channels-list"></div>
                     </div>
@@ -142,7 +142,7 @@
                     <!-- กราฟเวลาดูแยกตามช่วงวัน -->
                     <div class="top-content-card" style="margin-top: 1.5rem;">
                         <div class="section-title">
-                            <h2>📊 เวลาการรับชมรวมแบ่งตามช่วงวัน</h2>
+                            <h2>📊 เวลาการรับชมรวมแบ่งตามช่วงวัน (Dayparting Analytics)</h2>
                             <p>เปรียบเทียบจำนวนชั่วโมงที่ใช้ในแต่ละช่วงของวันในรอบสัปดาห์</p>
                         </div>
                         <div class="behavior-chart-wrapper">
@@ -154,7 +154,7 @@
                 <!-- ฝั่งขวา: ตาราง Heatmap จำลองตามวันและช่วงเวลา -->
                 <div class="top-content-card">
                     <div class="section-title">
-                        <h2>🔥 ความหนาแน่นการเข้าชม</h2>
+                        <h2>🔥 ความหนาแน่นการเข้าชม (Weekly Heatmap)</h2>
                         <p>ยิ่งสีเข้ม แสดงว่าเข้าชมบ่อยในช่วงเวลานั้น</p>
                     </div>
                     
@@ -180,7 +180,7 @@
             <div class="history-main-card">
                 <div class="history-header">
                     <div>
-                        <h2>📜 ประวัติการรับชมแบบเรียลไทม์</h2>
+                        <h2>📜 ประวัติการรับชมแบบเรียลไทม์ (Live Stream History Feed)</h2>
                         <p>บันทึกการรับชมวิดีโอจากผู้ใช้งานทั้งหมด (อัปเดตใหม่สไลด์ลงอย่างนุ่มนวล)</p>
                     </div>
                     <div class="history-badge">● LIVE STREAMING</div>
