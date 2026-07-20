@@ -229,7 +229,7 @@
             });
         }
 
-        // 📜 4. ระบบประวัติการรับชมแบบเรียลไทม์ (ปรับปรุงระบบสไลด์ลง นุ่มนวล ไร้อาการกระตุก)
+        // 📜 4. ระบบประวัติการรับชมแบบเรียลไทม์ (แสดงเฉพาะ HH:mm ไม่มีวินาที)
         const mockUsers = ["สมชาย สายลุย", "มินตรา น่ารัก", "กิตติพงษ์ วงศ์คำ", "ณัฐชา พาเพลิน", "ธนกร ยอดนักสตรีม", "อนันต์ เปี่ยมดี", "ศิริพร สอนง่าย", "วีรชัย ชัยชนะ", "กานดา พารวย", "ภานุวัฒน์ สุดเก่ง"];
         const mockCategories = [
             { name: "ดนตรี", color: "#3b82f6" },
@@ -257,7 +257,8 @@
             const category = getRandomElement(mockCategories);
             const title = getRandomElement(mockVideoTitles);
             const now = new Date();
-            const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
+            // แสดงเวลาแบบ ชั่วโมง:นาที (ไม่มีวินาที)
+            const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
             const watchDuration = Math.floor(Math.random() * 45) + 5;
 
             const div = document.createElement('div');
