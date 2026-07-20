@@ -18,7 +18,7 @@
         <header>
             <div class="header-left">
                 <h1>YT Viewer <span>Analytics</span></h1>
-                <!-- 🔘 แถบเมนูด้านบนสำหรับสลับหน้า (เพิ่มแถบประวัติ) -->
+                <!-- 🔘 แถบเมนูด้านบนสำหรับสลับหน้า -->
                 <nav class="nav-tabs">
                     <button class="tab-btn active" onclick="switchTab('overview')">📊 ภาพรวม (Overview)</button>
                     <button class="tab-btn" onclick="switchTab('trend')">📈 แนวโน้มเปรียบเทียบ (Trends)</button>
@@ -72,18 +72,18 @@
             </div>
         </div>
 
-        <!-- 📜 3. หน้าประวัติการรับชม (History Log Container - Auto Scrolling) -->
+        <!-- 📜 3. หน้าประวัติการรับชม (History Log Container - Smooth Feed) -->
         <div id="history-tab" class="tab-content hidden">
             <div class="history-main-card">
                 <div class="history-header">
                     <div>
                         <h2>📜 ประวัติการรับชมแบบเรียลไทม์ (Live Stream History Feed)</h2>
-                        <p>บันทึกการรับชมวิดีโอจากผู้ใช้งานทั้งหมด (ข้อมูลสุ่มอัปเดตและเลื่อนขึ้นอัตโนมัติ)</p>
+                        <p>บันทึกการรับชมวิดีโอจากผู้ใช้งานทั้งหมด (อัปเดตใหม่สไลด์ลงอย่างนุ่มนวล ไม่กระตุก)</p>
                     </div>
                     <div class="history-badge">● LIVE STREAMING</div>
                 </div>
 
-                <!-- กล่องสี่เหลี่ยมขนาดใหญ่แสดงประวัติแบบเลื่อนขึ้นอัตโนมัติ -->
+                <!-- กล่องสี่เหลี่ยมขนาดใหญ่แสดงประวัติ -->
                 <div class="history-feed-viewport" id="history-viewport">
                     <div class="history-feed-list" id="history-feed-list">
                         <!-- รายการประวัติจะถูกสร้างผ่าน JavaScript -->
@@ -124,7 +124,7 @@
                     { name: "Lofi Hip Hop Radio - Beats to Relax/Study to", views: 18, duration: "8 ชม. 15 น." },
                     { name: "รวมฮิตเพลงอินดี้สากล ฟังชิลๆ ยามบ่าย", views: 12, duration: "5 ชม. 30 น." },
                     { name: "Live Acoustic Session - ศิลปินดังร้องสด", views: 9, duration: "3 ชม. 50 น." },
-                    { name: "รวมเพลงฮิตติดชาตปี 2026", views: 7, duration: "2 ชม. 10 น." }
+                    { name: "รวมเพลงฮิตติดชาติปี 2026", views: 7, duration: "2 ชม. 10 น." }
                 ],
                 avgDaily: "6.0 ชม./วัน", peakDay: "วันศุกร์ (9 ชม.)", totalVideosWatched: "142 คลิป"
             },
@@ -229,7 +229,7 @@
             });
         }
 
-        // 📜 4. ระบบสร้างและเลื่อนประวัติการรับชมอัตโนมัติ (History Feed)
+        // 📜 4. ระบบประวัติการรับชมแบบเรียลไทม์ (ปรับปรุงระบบสไลด์ลง นุ่มนวล ไร้อาการกระตุก)
         const mockUsers = ["สมชาย สายลุย", "มินตรา น่ารัก", "กิตติพงษ์ วงศ์คำ", "ณัฐชา พาเพลิน", "ธนกร ยอดนักสตรีม", "อนันต์ เปี่ยมดี", "ศิริพร สอนง่าย", "วีรชัย ชัยชนะ", "กานดา พารวย", "ภานุวัฒน์ สุดเก่ง"];
         const mockCategories = [
             { name: "ดนตรี", color: "#3b82f6" },
@@ -258,10 +258,10 @@
             const title = getRandomElement(mockVideoTitles);
             const now = new Date();
             const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
-            const watchDuration = Math.floor(Math.random() * 45) + 5; // 5 ถึง 50 นาที
+            const watchDuration = Math.floor(Math.random() * 45) + 5;
 
             const div = document.createElement('div');
-            div.className = 'history-item-card';
+            div.className = 'history-item-card new-item'; 
             div.innerHTML = `
                 <div class="history-user">
                     <div class="user-avatar">${user.charAt(0)}</div>
@@ -283,27 +283,33 @@
             return div;
         }
 
-        let historyInterval = null;
         let isHistoryInit = false;
 
         function initHistoryFeed() {
             const list = document.getElementById('history-feed-list');
             if (!isHistoryInit) {
-                // สร้างข้อมูลตั้งต้น 15 รายการ
-                for (let i = 0; i < 15; i++) {
-                    list.appendChild(generateHistoryItem());
+                // สร้างข้อมูลตั้งต้น 8 รายการ
+                for (let i = 0; i < 8; i++) {
+                    const item = generateHistoryItem();
+                    item.classList.remove('new-item');
+                    list.appendChild(item);
                 }
                 isHistoryInit = true;
 
-                // สุ่มเพิ่มประวัติใหม่ขึ้นมาทุกๆ 2.5 วินาที
+                // แทรกประวัติใหม่ไว้บนสุด (prepend) ทุกๆ 3 วินาทีแบบสมูธ
                 setInterval(() => {
                     const newItem = generateHistoryItem();
-                    list.appendChild(newItem);
-                    // ลบรายการเก่าสุดทิ้งหากรายการมีมากกว่า 50 เพื่อป้องกันปัญหาความจำ
-                    if (list.children.length > 50) {
-                        list.removeChild(list.children[0]);
+                    list.insertBefore(newItem, list.firstChild);
+
+                    requestAnimationFrame(() => {
+                        newItem.classList.remove('new-item');
+                    });
+
+                    // ลบรายการล่างสุดออกเมื่อเกิน 20 รายการ
+                    if (list.children.length > 20) {
+                        list.removeChild(list.lastChild);
                     }
-                }, 2500);
+                }, 3000);
             }
         }
 
