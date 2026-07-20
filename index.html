@@ -18,12 +18,13 @@
         <header>
             <div class="header-left">
                 <h1>YT Viewer <span>Analytics</span></h1>
-                <!-- 🔘 แถบเมนูด้านบนสำหรับสลับหน้า (เพิ่มแถบ Top Content) -->
+                <!-- 🔘 แถบเมนูด้านบนสำหรับสลับหน้า (เพิ่มแถบ Behavior) -->
                 <nav class="nav-tabs">
                     <button class="tab-btn active" onclick="switchTab('overview')">📊 ภาพรวม (Overview)</button>
-                    <button class="tab-btn" onclick="switchTab('trend')">📈 แนวโน้มเปรียบเทียบ (Trends)</button>
+                    <button class="tab-btn" onclick="switchTab('trend')">📈 แนวโน้ม (Trends)</button>
                     <button class="tab-btn" onclick="switchTab('top-content')">🏆 ยอดฮิต (Top Content)</button>
-                    <button class="tab-btn" onclick="switchTab('history')">📜 ประวัติการรับชม (History)</button>
+                    <button class="tab-btn" onclick="switchTab('behavior')">⏰ พฤติกรรม (Behavior)</button>
+                    <button class="tab-btn" onclick="switchTab('history')">📜 ประวัติ (History)</button>
                 </nav>
             </div>
             <div class="update-status">ข้อมูลอัปเดตแบบ Real-time</div>
@@ -112,7 +113,69 @@
             </div>
         </div>
 
-        <!-- 📜 4. หน้าประวัติการรับชม (History Log Container - Smooth Feed) -->
+        <!-- ⏰ 4. หน้าพฤติกรรมการรับชม (Viewing Behavior Tab) -->
+        <div id="behavior-tab" class="tab-content hidden">
+            <div class="behavior-grid">
+                
+                <!-- ฝั่งซ้าย: สรุปพฤติกรรมหลัก และ กราฟแท่งช่วงเวลา -->
+                <div class="behavior-main">
+                    <div class="behavior-cards-row">
+                        <div class="behavior-summary-card">
+                            <div class="card-icon">🌙</div>
+                            <div class="card-info">
+                                <div class="card-label">ช่วงเวลาที่รับชมมากที่สุด</div>
+                                <div class="card-value">21:00 - 01:00 น.</div>
+                                <div class="card-subtext">ส่วนใหญ่เน้นดู สตรีมสด & ดนตรี</div>
+                            </div>
+                        </div>
+
+                        <div class="behavior-summary-card">
+                            <div class="card-icon">⚡</div>
+                            <div class="card-info">
+                                <div class="card-label">วันที่มีสมาธิรับชมสูงสุด</div>
+                                <div class="card-value">วันเสาร์-อาทิตย์</div>
+                                <div class="card-subtext">เฉลี่ยดูนานต่อเนื่อง 3.5 ชม.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- กราฟเวลาดูแยกตามช่วงวัน -->
+                    <div class="top-content-card" style="margin-top: 1.5rem;">
+                        <div class="section-title">
+                            <h2>📊 เวลาการรับชมรวมแบ่งตามช่วงวัน (Dayparting Analytics)</h2>
+                            <p>เปรียบเทียบจำนวนชั่วโมงที่ใช้ในแต่ละช่วงของวันในรอบสัปดาห์</p>
+                        </div>
+                        <div class="behavior-chart-wrapper">
+                            <canvas id="daypartingChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ฝั่งขวา: ตาราง Heatmap จำลองตามวันและช่วงเวลา -->
+                <div class="top-content-card">
+                    <div class="section-title">
+                        <h2>🔥 ความหนาแน่นการเข้าชม (Weekly Heatmap)</h2>
+                        <p>ยิ่งสีเข้ม แสดงว่าเข้าชมบ่อยในช่วงเวลานั้น</p>
+                    </div>
+                    
+                    <div class="heatmap-container" id="heatmap-grid">
+                        <!-- สร้างผ่าน JS -->
+                    </div>
+
+                    <div class="heatmap-legend">
+                        <span>น้อย</span>
+                        <div class="legend-box level-0"></div>
+                        <div class="legend-box level-1"></div>
+                        <div class="legend-box level-2"></div>
+                        <div class="legend-box level-3"></div>
+                        <span>มาก</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- 📜 5. หน้าประวัติการรับชม (History Log Container) -->
         <div id="history-tab" class="tab-content hidden">
             <div class="history-main-card">
                 <div class="history-header">
@@ -123,16 +186,13 @@
                     <div class="history-badge">● LIVE STREAMING</div>
                 </div>
 
-                <!-- กล่องสี่เหลี่ยมขนาดใหญ่แสดงประวัติ -->
                 <div class="history-feed-viewport" id="history-viewport">
-                    <div class="history-feed-list" id="history-feed-list">
-                        <!-- รายการประวัติจะถูกสร้างผ่าน JavaScript -->
-                    </div>
+                    <div class="history-feed-list" id="history-feed-list"></div>
                 </div>
             </div>
         </div>
 
-        <!-- 🔍 5. หน้ารายละเอียด (Detail View - แสดงเมื่อคลิกการ์ดหมวดหมู่) -->
+        <!-- 🔍 6. หน้ารายละเอียด (Detail View - แสดงเมื่อคลิกการ์ดหมวดหมู่) -->
         <div id="detail-view" class="tab-content hidden">
             <button class="back-btn" onclick="showMainView()">← ย้อนกลับหน้าหลัก</button>
 
@@ -206,7 +266,6 @@
             }
         ];
 
-        // ข้อมูลสำหรับหน้า Top Content
         const top10GlobalVideos = [
             { rank: 1, title: "LIVE: แข่งขัน Esport รอบชิงชนะเลิศประจำปี", category: "ไลฟ์สด", duration: "22 ชม. 10 น.", views: "15 ครั้ง", color: "#ef4444" },
             { rank: 2, title: "สตรีมสด: เล่นเกมเอาชีวิตรอดในเกาะร้างกับเพื่อนๆ", category: "ไลฟ์สด", duration: "18 ชม. 00 น.", views: "11 ครั้ง", color: "#ef4444" },
@@ -231,8 +290,9 @@
         const dayLabels = ['จันทร์', 'อังคาร', 'พุธ', 'พฤหัสบดี', 'ศุกร์', 'เสาร์', 'อาทิตย์'];
         let trendsChartInstance = null;
         let donutChartInstance = null;
+        let daypartingChartInstance = null;
 
-        // 🔘 2. ระบบสลับหน้า Tab (Overview, Trend, Top Content, History)
+        // 🔘 2. ระบบสลับหน้า Tab
         function switchTab(tabName) {
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));
@@ -248,8 +308,12 @@
                 document.querySelectorAll('.tab-btn')[2].classList.add('active');
                 document.getElementById('top-content-tab').classList.remove('hidden');
                 renderTopContentTab();
-            } else if (tabName === 'history') {
+            } else if (tabName === 'behavior') {
                 document.querySelectorAll('.tab-btn')[3].classList.add('active');
+                document.getElementById('behavior-tab').classList.remove('hidden');
+                renderBehaviorTab();
+            } else if (tabName === 'history') {
+                document.querySelectorAll('.tab-btn')[4].classList.add('active');
                 document.getElementById('history-tab').classList.remove('hidden');
                 initHistoryFeed();
             }
@@ -296,9 +360,8 @@
             });
         }
 
-        // 🏆 4. วาดและแสดงผลหน้า Top Content
+        // 🏆 4. หน้า Top Content
         function renderTopContentTab() {
-            // สร้าง 10 อันดับวิดีโอ
             const topListContainer = document.getElementById('top-10-videos-list');
             topListContainer.innerHTML = '';
             top10GlobalVideos.forEach(item => {
@@ -317,7 +380,6 @@
                 `;
             });
 
-            // สร้าง 5 อันดับช่องโปรด
             const channelContainer = document.getElementById('top-channels-list');
             channelContainer.innerHTML = '';
             topChannels.forEach((ch, idx) => {
@@ -333,7 +395,6 @@
                 `;
             });
 
-            // วาดกราฟวงกลม Donut Chart สัดส่วนความยาวคลิป
             if (donutChartInstance) donutChartInstance.destroy();
             const ctxDonut = document.getElementById('durationDonutChart').getContext('2d');
             donutChartInstance = new Chart(ctxDonut, {
@@ -351,17 +412,76 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: { color: '#f8fafc', font: { family: 'Sarabun', size: 12 }, padding: 15 }
-                        }
+                        legend: { position: 'bottom', labels: { color: '#f8fafc', font: { family: 'Sarabun', size: 12 }, padding: 15 } }
                     }
                 }
             });
         }
 
-        // 📜 5. ระบบประวัติการรับชมแบบเรียลไทม์ (แสดงเฉพาะ HH:mm ไม่มีวินาที)
-        const mockUsers = ["สมชาย สายลุย", "มินตรา น่ารัก", "กิตติพงษ์ วงศ์คำ", "ณัฐชา พาเพลิน", "ธนกร ยอดนักสตรีม", "อนันต์ เปี่ยมดี", "ศิริพร สอนง่าย", "วีรชัย ชัยชนะ", "กานดา พารวย", "ภานุวัฒน์ สุดเก่ง"];
+        // ⏰ 5. วาดและแสดงผลหน้าพฤติกรรมการรับชม (Behavior Tab)
+        function renderBehaviorTab() {
+            // วาดกราฟ Dayparting Bar Chart
+            if (daypartingChartInstance) daypartingChartInstance.destroy();
+            const ctxDaypart = document.getElementById('daypartingChart').getContext('2d');
+            
+            daypartingChartInstance = new Chart(ctxDaypart, {
+                type: 'bar',
+                data: {
+                    labels: ['เช้า (06:00-12:00)', 'บ่าย (12:00-18:00)', 'ค่ำ (18:00-22:00)', 'ดึก (22:00-06:00)'],
+                    datasets: [{
+                        label: 'เวลาการรับชมรวม (ชั่วโมง)',
+                        data: [12.5, 18.2, 35.8, 42.0],
+                        backgroundColor: ['#0ea5e9', '#10b981', '#eab308', '#ef4444'],
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        x: { ticks: { color: '#94a3b8', font: { family: 'Sarabun' } }, grid: { display: false } },
+                        y: { ticks: { color: '#94a3b8', font: { family: 'Sarabun' }, callback: val => val + ' ชม.' }, grid: { color: '#334155' } }
+                    }
+                }
+            });
+
+            // สร้าง Heatmap Grid 7 วัน x 4 ช่วงเวลา
+            const heatmapContainer = document.getElementById('heatmap-grid');
+            heatmapContainer.innerHTML = '';
+
+            const timeSlots = ['เช้า', 'บ่าย', 'ค่ำ', 'ดึก'];
+            const heatmapLevels = [
+                [1, 2, 3, 2], // จันทร์
+                [1, 1, 3, 3], // อังคาร
+                [2, 2, 2, 3], // พุธ
+                [1, 2, 3, 2], // พฤหัสบดี
+                [2, 3, 3, 4], // ศุกร์
+                [2, 3, 4, 4], // เสาร์
+                [2, 2, 4, 3]  // อาทิตย์
+            ];
+
+            // Header ช่วงเวลา
+            let headerHtml = `<div class="heatmap-cell header-cell"></div>`;
+            timeSlots.forEach(slot => {
+                headerHtml += `<div class="heatmap-cell header-cell">${slot}</div>`;
+            });
+            heatmapContainer.innerHTML += headerHtml;
+
+            // Rows ตามวัน
+            dayLabels.forEach((day, dIdx) => {
+                let rowHtml = `<div class="heatmap-cell day-cell">${day.substring(0, 2)}</div>`;
+                heatmapLevels[dIdx].forEach(level => {
+                    rowHtml += `<div class="heatmap-cell level-${level - 1}" title="ความหนาแน่นระดับ ${level}"></div>`;
+                });
+                heatmapContainer.innerHTML += rowHtml;
+            });
+        }
+
+        // 📜 6. ระบบประวัติการรับชม
+        const mockUsers = ["สมชาย สายลุย", "มินตรา น่ารัก", "กิตติพงษ์ วงศ์คำ", "ณัฐชา พาเพลิน", "ธนกร ยอดนักสตรีม", "อนันต์ เปี่ยมดี", "ศิริพร สอนง่าย"];
         const mockCategories = [
             { name: "ดนตรี", color: "#3b82f6" },
             { name: "ไลฟ์สด", color: "#ef4444" },
@@ -372,13 +492,7 @@
             "Official MV - ซิงเกิ้ลใหม่ล่าสุดดนตรีป็อป",
             "LIVE: แข่งขัน Esport รอบชิงชนะเลิศประจำปี",
             "สรุปข่าวเด่นรอบวัน สาระเด่นประเด็นร้อน",
-            "ล้างตู้เย็นยังไงให้สะอาดภายใน 60 วินาที #Shorts",
-            "Lofi Hip Hop Radio - Beats to Relax/Study to",
-            "สอนเขียนโค้ด HTML CSS ฉบับมือใหม่เข้าใจง่าย",
-            "สตรีมสด: เล่นเกมเอาชีวิตรอดในเกาะร้าง",
-            "วิเคราะห์เทคโนโลยี AI และไอทีปี 2026",
-            "เมนูไข่ง่ายๆ ทำได้ใน 1 นาที #Shorts",
-            "10 อันดับของกินในเซเว่นที่ต้องลอง"
+            "ล้างตู้เย็นยังไงให้สะอาดภายใน 60 วินาที #Shorts"
         ];
 
         function getRandomElement(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
@@ -441,7 +555,7 @@
             }
         }
 
-        // 🛠️ 6. วาดการ์ดหน้าหลัก
+        // 🛠️ 7. วาดการ์ดหน้าหลัก
         function renderDashboard() {
             const container = document.getElementById('category-grid-container');
             container.innerHTML = '';
@@ -478,7 +592,7 @@
             });
         }
 
-        // 🔍 7. หน้ารายละเอียด Detail View
+        // 🔍 8. หน้ารายละเอียด Detail View
         function showDetail(categoryKey) {
             const data = youtubeData.find(item => item.key === categoryKey);
             if (!data) return;
@@ -529,7 +643,7 @@
             switchTab('overview');
         }
 
-        // 🔄 8. ระบบสุ่ม Live Activity แถบด้านล่าง
+        // 🔄 9. ระบบสุ่ม Live Activity
         const rawUsers = ["สมชาย สายลุย", "มินตรา น่ารัก", "กิตติพงษ์ วงศ์คำ", "ณัฐชา พาเพลิน", "ธนกร ยอดนักสตรีม", "อนันต์ เปี่ยมดี", "ศิริพร สอนง่าย"];
         const rawVideos = ["LIVE: แข่งขัน Esport รอบชิงชนะเลิศ", "Official MV - ซิงเกิ้ลใหม่ล่าสุด", "สรุปข่าวเด่นรอบวัน สาระเด่น", "สอนเขียนโค้ด HTML CSS ฉบับมือใหม่"];
         const rawTimes = ["เมื่อสักครู่", "1 นาทีที่แล้ว", "2 นาทีที่แล้ว", "3 นาทีที่แล้ว"];
@@ -559,7 +673,7 @@
             }, 2500);
         }
 
-        // ⏱️ 9. เวลา Real-time
+        // ⏱️ 10. เวลา Real-time
         let totalSecondsToday = 28450; 
         function updateLiveTime() {
             totalSecondsToday += Math.floor(Math.random() * 3) + 1; 
