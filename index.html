@@ -6,7 +6,7 @@
     <title>YouTube Viewer Analytics Dashboard</title>
     <!-- Google Font -->
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Chart.js สำหรับวาดกราฟเส้น -->
+    <!-- Chart.js สำหรับวาดกราฟ -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- เชื่อมโยงไฟล์ CSS -->
     <link rel="stylesheet" href="./style.css">
@@ -18,10 +18,11 @@
         <header>
             <div class="header-left">
                 <h1>YT Viewer <span>Analytics</span></h1>
-                <!-- 🔘 แถบเมนูด้านบนสำหรับสลับหน้า -->
+                <!-- 🔘 แถบเมนูด้านบนสำหรับสลับหน้า (เพิ่มแถบ Top Content) -->
                 <nav class="nav-tabs">
                     <button class="tab-btn active" onclick="switchTab('overview')">📊 ภาพรวม (Overview)</button>
                     <button class="tab-btn" onclick="switchTab('trend')">📈 แนวโน้มเปรียบเทียบ (Trends)</button>
+                    <button class="tab-btn" onclick="switchTab('top-content')">🏆 ยอดฮิต (Top Content)</button>
                     <button class="tab-btn" onclick="switchTab('history')">📜 ประวัติการรับชม (History)</button>
                 </nav>
             </div>
@@ -72,7 +73,46 @@
             </div>
         </div>
 
-        <!-- 📜 3. หน้าประวัติการรับชม (History Log Container - Smooth Feed) -->
+        <!-- 🏆 3. หน้าเนื้อหายอดฮิต (Top Content Analytics Tab) -->
+        <div id="top-content-tab" class="tab-content hidden">
+            <div class="top-content-grid">
+                
+                <!-- ฝั่งซ้าย: 10 อันดับวิดีโอที่มีเวลาดูสูงสุด -->
+                <div class="top-content-card">
+                    <div class="section-title">
+                        <h2>🥇 10 อันดับวิดีโอที่ใช้เวลาชมมากที่สุด</h2>
+                        <p>จัดอันดับตามจำนวนเวลารวมที่รับชมจริง</p>
+                    </div>
+                    <div class="top-10-list" id="top-10-videos-list"></div>
+                </div>
+
+                <!-- ฝั่งขวา: สถิติสัดส่วนความยาวคลิป และ ช่องสุดโปรด -->
+                <div class="side-analytics">
+                    
+                    <!-- กราฟวงกลม สัดส่วนความยาวคลิป -->
+                    <div class="top-content-card">
+                        <div class="section-title">
+                            <h2>⏱️ สัดส่วนความยาวคลิปที่ชอบดู</h2>
+                        </div>
+                        <div class="donut-chart-wrapper">
+                            <canvas id="durationDonutChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- 5 อันดับช่อง YouTube โปรด -->
+                    <div class="top-content-card">
+                        <div class="section-title">
+                            <h2>📺 5 อันดับช่องโปรด (Top Channels)</h2>
+                        </div>
+                        <div class="top-channels-list" id="top-channels-list"></div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+        <!-- 📜 4. หน้าประวัติการรับชม (History Log Container - Smooth Feed) -->
         <div id="history-tab" class="tab-content hidden">
             <div class="history-main-card">
                 <div class="history-header">
@@ -92,7 +132,7 @@
             </div>
         </div>
 
-        <!-- 🔍 4. หน้ารายละเอียด (Detail View - แสดงเมื่อคลิกการ์ดหมวดหมู่) -->
+        <!-- 🔍 5. หน้ารายละเอียด (Detail View - แสดงเมื่อคลิกการ์ดหมวดหมู่) -->
         <div id="detail-view" class="tab-content hidden">
             <button class="back-btn" onclick="showMainView()">← ย้อนกลับหน้าหลัก</button>
 
@@ -166,10 +206,33 @@
             }
         ];
 
+        // ข้อมูลสำหรับหน้า Top Content
+        const top10GlobalVideos = [
+            { rank: 1, title: "LIVE: แข่งขัน Esport รอบชิงชนะเลิศประจำปี", category: "ไลฟ์สด", duration: "22 ชม. 10 น.", views: "15 ครั้ง", color: "#ef4444" },
+            { rank: 2, title: "สตรีมสด: เล่นเกมเอาชีวิตรอดในเกาะร้างกับเพื่อนๆ", category: "ไลฟ์สด", duration: "18 ชม. 00 น.", views: "11 ครั้ง", color: "#ef4444" },
+            { rank: 3, title: "Official MV - ซิงเกิ้ลใหม่ล่าสุดดนตรีป็อป", category: "ดนตรี", duration: "12 ชม. 40 น.", views: "24 ครั้ง", color: "#3b82f6" },
+            { rank: 4, title: "คุยสบายๆ ยามดึก ตอบคำถามแฟนคลับ", category: "ไลฟ์สด", duration: "12 ชม. 30 น.", views: "8 ครั้ง", color: "#ef4444" },
+            { rank: 5, title: "Lofi Hip Hop Radio - Beats to Relax/Study to", category: "ดนตรี", duration: "8 ชม. 15 น.", views: "18 ครั้ง", color: "#3b82f6" },
+            { rank: 6, title: "สรุปข่าวเด่นรอบวัน สาระเด่นประเด็นร้อน", category: "ข่าวสาร", duration: "6 ชม. 20 น.", views: "32 ครั้ง", color: "#10b981" },
+            { rank: 7, title: "Live สดทำอาหารเมนูพิเศษต้อนรับวันหยุด", category: "ไลฟ์สด", duration: "6 ชม. 15 น.", views: "5 ครั้ง", color: "#ef4444" },
+            { rank: 8, title: "รวมฮิตเพลงอินดี้สากล ฟังชิลๆ ยามบ่าย", category: "ดนตรี", duration: "5 ชม. 30 น.", views: "12 ครั้ง", color: "#3b82f6" },
+            { rank: 9, title: "ล้างตู้เย็นยังไงให้สะอาดภายใน 60 วินาที #Shorts", category: "Shorts", duration: "4 ชม. 30 น.", views: "85 ครั้ง", color: "#eab308" },
+            { rank: 10, title: "วิเคราะห์เทคโนโลยี AI และไอทีปี 2026", category: "ข่าวสาร", duration: "4 ชม. 10 น.", views: "14 ครั้ง", color: "#10b981" }
+        ];
+
+        const topChannels = [
+            { name: "Esport Thailand Official", subs: "1.2M", totalWatch: "40 ชม. 10 น.", category: "ไลฟ์สด" },
+            { name: "Chill Music Lounge", subs: "850K", totalWatch: "26 ชม. 25 น.", category: "ดนตรี" },
+            { name: "Daily News Today", subs: "2.1M", totalWatch: "13 ชม. 45 น.", category: "ข่าวสาร" },
+            { name: "Shorts & Fun Station", subs: "500K", totalWatch: "11 ชม. 10 น.", category: "Shorts" },
+            { name: "Tech & AI Update", subs: "340K", totalWatch: "8 ชม. 30 น.", category: "ข่าวสาร" }
+        ];
+
         const dayLabels = ['จันทร์', 'อังคาร', 'พุธ', 'พฤหัสบดี', 'ศุกร์', 'เสาร์', 'อาทิตย์'];
         let trendsChartInstance = null;
+        let donutChartInstance = null;
 
-        // 🔘 2. ระบบสลับหน้า Tab (Overview, Trend, History)
+        // 🔘 2. ระบบสลับหน้า Tab (Overview, Trend, Top Content, History)
         function switchTab(tabName) {
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));
@@ -181,8 +244,12 @@
                 document.querySelectorAll('.tab-btn')[1].classList.add('active');
                 document.getElementById('trend-tab').classList.remove('hidden');
                 renderLineChart();
-            } else if (tabName === 'history') {
+            } else if (tabName === 'top-content') {
                 document.querySelectorAll('.tab-btn')[2].classList.add('active');
+                document.getElementById('top-content-tab').classList.remove('hidden');
+                renderTopContentTab();
+            } else if (tabName === 'history') {
+                document.querySelectorAll('.tab-btn')[3].classList.add('active');
                 document.getElementById('history-tab').classList.remove('hidden');
                 initHistoryFeed();
             }
@@ -229,7 +296,71 @@
             });
         }
 
-        // 📜 4. ระบบประวัติการรับชมแบบเรียลไทม์ (แสดงเฉพาะ HH:mm ไม่มีวินาที)
+        // 🏆 4. วาดและแสดงผลหน้า Top Content
+        function renderTopContentTab() {
+            // สร้าง 10 อันดับวิดีโอ
+            const topListContainer = document.getElementById('top-10-videos-list');
+            topListContainer.innerHTML = '';
+            top10GlobalVideos.forEach(item => {
+                topListContainer.innerHTML += `
+                    <div class="top-10-item">
+                        <div class="top-rank rank-${item.rank}">${item.rank}</div>
+                        <div class="top-info">
+                            <div class="top-title">${item.title}</div>
+                            <div class="top-meta">
+                                <span class="history-category-tag" style="background-color: ${item.color}20; color: ${item.color}; border: 1px solid ${item.color}50;">${item.category}</span>
+                                <span>👁️ เปิดดู ${item.views}</span>
+                            </div>
+                        </div>
+                        <div class="top-duration">${item.duration}</div>
+                    </div>
+                `;
+            });
+
+            // สร้าง 5 อันดับช่องโปรด
+            const channelContainer = document.getElementById('top-channels-list');
+            channelContainer.innerHTML = '';
+            topChannels.forEach((ch, idx) => {
+                channelContainer.innerHTML += `
+                    <div class="channel-item">
+                        <div class="channel-rank">${idx + 1}</div>
+                        <div class="channel-info">
+                            <div class="channel-name">${ch.name}</div>
+                            <div class="channel-subs">ผู้ติดตาม ${ch.subs}</div>
+                        </div>
+                        <div class="channel-time">${ch.totalWatch}</div>
+                    </div>
+                `;
+            });
+
+            // วาดกราฟวงกลม Donut Chart สัดส่วนความยาวคลิป
+            if (donutChartInstance) donutChartInstance.destroy();
+            const ctxDonut = document.getElementById('durationDonutChart').getContext('2d');
+            donutChartInstance = new Chart(ctxDonut, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Shorts (< 1 นาที)', 'คลิปสั้น (1 - 10 นาที)', 'คลิปยาว (10 - 60 นาที)', 'สตรีมยาว (> 1 ชั่วโมง)'],
+                    datasets: [{
+                        data: [25, 30, 20, 25],
+                        backgroundColor: ['#eab308', '#10b981', '#3b82f6', '#ef4444'],
+                        borderWidth: 2,
+                        borderColor: '#1e293b'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { color: '#f8fafc', font: { family: 'Sarabun', size: 12 }, padding: 15 }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 📜 5. ระบบประวัติการรับชมแบบเรียลไทม์ (แสดงเฉพาะ HH:mm ไม่มีวินาที)
         const mockUsers = ["สมชาย สายลุย", "มินตรา น่ารัก", "กิตติพงษ์ วงศ์คำ", "ณัฐชา พาเพลิน", "ธนกร ยอดนักสตรีม", "อนันต์ เปี่ยมดี", "ศิริพร สอนง่าย", "วีรชัย ชัยชนะ", "กานดา พารวย", "ภานุวัฒน์ สุดเก่ง"];
         const mockCategories = [
             { name: "ดนตรี", color: "#3b82f6" },
@@ -257,7 +388,6 @@
             const category = getRandomElement(mockCategories);
             const title = getRandomElement(mockVideoTitles);
             const now = new Date();
-            // แสดงเวลาแบบ ชั่วโมง:นาที (ไม่มีวินาที)
             const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
             const watchDuration = Math.floor(Math.random() * 45) + 5;
 
@@ -289,7 +419,6 @@
         function initHistoryFeed() {
             const list = document.getElementById('history-feed-list');
             if (!isHistoryInit) {
-                // สร้างข้อมูลตั้งต้น 8 รายการ
                 for (let i = 0; i < 8; i++) {
                     const item = generateHistoryItem();
                     item.classList.remove('new-item');
@@ -297,7 +426,6 @@
                 }
                 isHistoryInit = true;
 
-                // แทรกประวัติใหม่ไว้บนสุด (prepend) ทุกๆ 3 วินาทีแบบสมูธ
                 setInterval(() => {
                     const newItem = generateHistoryItem();
                     list.insertBefore(newItem, list.firstChild);
@@ -306,7 +434,6 @@
                         newItem.classList.remove('new-item');
                     });
 
-                    // ลบรายการล่างสุดออกเมื่อเกิน 20 รายการ
                     if (list.children.length > 20) {
                         list.removeChild(list.lastChild);
                     }
@@ -314,7 +441,7 @@
             }
         }
 
-        // 🛠️ 5. วาดการ์ดหน้าหลัก
+        // 🛠️ 6. วาดการ์ดหน้าหลัก
         function renderDashboard() {
             const container = document.getElementById('category-grid-container');
             container.innerHTML = '';
@@ -351,7 +478,7 @@
             });
         }
 
-        // 🔍 6. หน้ารายละเอียด Detail View
+        // 🔍 7. หน้ารายละเอียด Detail View
         function showDetail(categoryKey) {
             const data = youtubeData.find(item => item.key === categoryKey);
             if (!data) return;
@@ -402,7 +529,7 @@
             switchTab('overview');
         }
 
-        // 🔄 7. ระบบสุ่ม Live Activity แถบด้านล่าง
+        // 🔄 8. ระบบสุ่ม Live Activity แถบด้านล่าง
         const rawUsers = ["สมชาย สายลุย", "มินตรา น่ารัก", "กิตติพงษ์ วงศ์คำ", "ณัฐชา พาเพลิน", "ธนกร ยอดนักสตรีม", "อนันต์ เปี่ยมดี", "ศิริพร สอนง่าย"];
         const rawVideos = ["LIVE: แข่งขัน Esport รอบชิงชนะเลิศ", "Official MV - ซิงเกิ้ลใหม่ล่าสุด", "สรุปข่าวเด่นรอบวัน สาระเด่น", "สอนเขียนโค้ด HTML CSS ฉบับมือใหม่"];
         const rawTimes = ["เมื่อสักครู่", "1 นาทีที่แล้ว", "2 นาทีที่แล้ว", "3 นาทีที่แล้ว"];
@@ -432,7 +559,7 @@
             }, 2500);
         }
 
-        // ⏱️ 8. เวลา Real-time
+        // ⏱️ 9. เวลา Real-time
         let totalSecondsToday = 28450; 
         function updateLiveTime() {
             totalSecondsToday += Math.floor(Math.random() * 3) + 1; 
