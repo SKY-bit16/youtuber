@@ -422,6 +422,49 @@
             if (daypartingChartInstance) daypartingChartInstance.destroy();
             const ctxDaypart = document.getElementById('daypartingChart').getContext('2d');
             
+            // 📌 Plugin สำหรับวาดกล่องข้อความตัวเลขเหนือแท่งกราฟ (คล้ายหน้าภาพรวม)
+            const alwaysShowLabelsPlugin = {
+                id: 'alwaysShowLabels',
+                afterDraw(chart) {
+                    const { ctx } = chart;
+                    chart.data.datasets.forEach((dataset, i) => {
+                        const meta = chart.getDatasetMeta(i);
+                        meta.data.forEach((bar, index) => {
+                            const value = dataset.data[index] + ' ชม.';
+                            const x = bar.x;
+                            const y = bar.y - 12; // ระยะห่างจากยอดแท่งกราฟ
+
+                            ctx.save();
+                            ctx.font = '500 12px Sarabun';
+                            ctx.textAlign = 'center';
+                            ctx.textBaseline = 'middle';
+
+                            // คำนวณความกว้างของข้อความเพื่อวาดกล่องพื้นหลังขาว
+                            const textWidth = ctx.measureText(value).width;
+                            const paddingX = 8;
+                            const paddingY = 4;
+                            const boxWidth = textWidth + paddingX * 2;
+                            const boxHeight = 20;
+
+                            // วาดกล่องพื้นหลังสีขาวมน
+                            ctx.fillStyle = '#ffffff';
+                            ctx.beginPath();
+                            if (ctx.roundRect) {
+                                ctx.roundRect(x - boxWidth / 2, y - boxHeight / 2, boxWidth, boxHeight, 4);
+                            } else {
+                                ctx.rect(x - boxWidth / 2, y - boxHeight / 2, boxWidth, boxHeight);
+                            }
+                            ctx.fill();
+
+                            // วาดข้อความตัวหนังสือสีดำ
+                            ctx.fillStyle = '#0f172a';
+                            ctx.fillText(value, x, y + 1);
+                            ctx.restore();
+                        });
+                    });
+                }
+            };
+
             daypartingChartInstance = new Chart(ctxDaypart, {
                 type: 'bar',
                 data: {
@@ -433,17 +476,28 @@
                         borderRadius: 8
                     }]
                 },
+                plugins: [alwaysShowLabelsPlugin], // 👈 ใส่ Plugin วาดตัวเลขเหนือแท่ง
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    layout: {
+                        padding: {
+                            top: 25 // เพิ่มระยะด้านบนเพื่อให้กล่องป้ายไม่หลุดขอบกราฟ
+                        }
+                    },
                     plugins: { legend: { display: false } },
                     scales: {
                         x: { ticks: { color: '#94a3b8', font: { family: 'Sarabun' } }, grid: { display: false } },
-                        y: { ticks: { color: '#94a3b8', font: { family: 'Sarabun' }, callback: val => val + ' ชม.' }, grid: { color: '#334155' } }
+                        y: { 
+                            ticks: { color: '#94a3b8', font: { family: 'Sarabun' }, callback: val => val + ' ชม.' }, 
+                            grid: { color: '#334155' },
+                            suggestedMax: 48 // ขยายแกน Y เพิ่มเล็กน้อยเพื่อป้องกันตัวเลขชนขอบบน
+                        }
                     }
                 }
             });
 
+            // ส่วนของ Heatmap ด้านล่าง
             const heatmapContainer = document.getElementById('heatmap-grid');
             heatmapContainer.innerHTML = '';
 
