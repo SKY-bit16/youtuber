@@ -1,309 +1,350 @@
-<!DOCTYPE html>
-<html lang="th">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YouTube Viewer Analytics Dashboard</title>
-    <!-- Google Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- เชื่อมโยงไฟล์ CSS -->
-    <link rel="stylesheet" href="./style.css">
-</head>
-<body>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Sarabun', sans-serif;
+}
 
-    <div class="container">
-        <!-- Header -->
-        <header>
-            <h1>YT Viewer <span>Analytics</span></h1>
-            <div class="update-status">ข้อมูลอัปเดตแบบ Real-time</div>
-        </header>
+:root {
+    --bg-dark-blue: #0f172a;
+    --card-dark-blue: #1e293b;
+    --accent-blue: #3b82f6;
+    --cyan-blue: #0ea5e9;
+    --pure-white: #ffffff;
+    --text-gray: #94a3b8;
+    --text-light: #f8fafc;
+    --border-color: #334155;
+}
 
-        <!-- 🏠 หน้าหลัก Dashboard (Main View) -->
-        <div id="main-view">
-            <!-- แผงเวลารวมวันนี้ -->
-            <div class="today-overview-box">
-                <div class="today-info">
-                    <h2>เวลาเข้าชมรวมวันนี้ (Today's Total Watch Time)</h2>
-                    <div class="total-time" id="live-total-time">00 ชม. 00 น. 00 ว.</div>
-                </div>
-                <div class="today-date">
-                    <div id="current-date">วันที่โหลดข้อมูล...</div>
-                    <div id="current-time">00:00:00</div>
-                </div>
-            </div>
+body {
+    background-color: var(--bg-dark-blue);
+    color: var(--text-light);
+    min-height: 100vh;
+    padding: 2rem;
+}
 
-            <!-- โซนการ์ด 4 หมวดหมู่ -->
-            <div class="category-grid" id="category-grid-container"></div>
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+}
 
-            <!-- กล่องแสดงสถานะการดูสดด้านล่าง -->
-            <div class="live-activity-box">
-                <div class="activity-header">
-                    <span class="live-dot"></span> สถานะการเข้าชมล่าสุด (Live Activity)
-                </div>
-                <div class="ticker-wrapper">
-                    <div class="ticker-container" id="ticker-container"></div>
-                </div>
-            </div>
-        </div>
+.hidden {
+    display: none !important;
+}
 
-        <!-- 🔍 หน้ารายละเอียด (Detail View - จะแสดงเมื่อกดคลิกที่การ์ด) -->
-        <div id="detail-view" class="hidden">
-            <button class="back-btn" onclick="showMainView()">← ย้อนกลับหน้าหลัก</button>
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
 
-            <div class="detail-header-card" id="detail-header">
-                <!-- ข้อมูลหัวข้อหมวดหมู่จะใส่ผ่าน JavaScript -->
-            </div>
+header h1 {
+    font-size: 1.8rem;
+    color: var(--pure-white);
+    font-weight: 600;
+}
 
-            <div class="detail-grid">
-                <!-- กล่องรายการ Top Videos -->
-                <div class="detail-card">
-                    <h3>🎬 5 อันดับคลิปที่รับชมมากที่สุด</h3>
-                    <div class="top-list" id="top-videos-list">
-                        <!-- รายชื่อคลิปจะใส่ผ่าน JavaScript -->
-                    </div>
-                </div>
+header h1 span {
+    color: var(--accent-blue);
+}
 
-                <!-- กล่องสถิติย่อย -->
-                <div class="detail-card">
-                    <h3>📊 สถิติการรับชมเชิงลึก</h3>
-                    <div class="stats-summary" id="stats-summary">
-                        <!-- รายละเอียดสถิติจะใส่ผ่าน JavaScript -->
-                    </div>
-                </div>
-            </div>
-        </div>
+.update-status {
+    color: var(--text-gray); 
+    font-size: 0.9rem;
+}
 
-    </div>
+.today-overview-box {
+    background: linear-gradient(135deg, var(--accent-blue), #1d4ed8);
+    color: var(--pure-white);
+    padding: 1.5rem 2rem;
+    border-radius: 16px;
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.3);
+}
 
-    <script>
-        // 📊 1. ชุดข้อมูลสถิติของแต่ละหมวดหมู่ (พร้อมข้อมูลเชิงลึกสำหรับ Detail View)
-        const youtubeData = [
-            { 
-                key: 'music', 
-                title: 'ดนตรี (Music)', 
-                badge: 'เพลง & มิวสิควิดีโอ', 
-                dailyHours: [6, 4.5, 5, 7.5, 9, 4, 6.2],
-                topVideos: [
-                    { name: "Official MV - ซิงเกิ้ลใหม่ล่าสุดดนตรีป็อป", views: 24, duration: "12 ชม. 40 น." },
-                    { name: "Lofi Hip Hop Radio - Beats to Relax/Study to", views: 18, duration: "8 ชม. 15 น." },
-                    { name: "รวมฮิตเพลงอินดี้สากล ฟังชิลๆ ยามบ่าย", views: 12, duration: "5 ชม. 30 น." },
-                    { name: "Live Acoustic Session - ศิลปินดังร้องสด", views: 9, duration: "3 ชม. 50 น." },
-                    { name: "รวมเพลงฮิตติดชาตปี 2026", views: 7, duration: "2 ชม. 10 น." }
-                ],
-                avgDaily: "6.0 ชม./วัน",
-                peakDay: "วันศุกร์ (9 ชม.)",
-                totalVideosWatched: "142 คลิป"
-            },
-            { 
-                key: 'live', 
-                title: 'ไลฟ์สด (Live Stream)', 
-                badge: 'สตรีมมิ่ง & เกม', 
-                dailyHours: [5, 7.5, 4, 8.2, 12, 16, 15.7],
-                topVideos: [
-                    { name: "LIVE: แข่งขัน Esport รอบชิงชนะเลิศประจำปี", views: 15, duration: "22 ชม. 10 น." },
-                    { name: "สตรีมสด: เล่นเกมเอาชีวิตรอดในเกาะร้างกับเพื่อนๆ", views: 11, duration: "18 ชม. 00 น." },
-                    { name: "คุยสบายๆ ยามดึก ตอบคำถามแฟนคลับ", views: 8, duration: "12 ชม. 30 น." },
-                    { name: "Live สดทำอาหารเมนูพิเศษต้อนรับวันหยุด", views: 5, duration: "6 ชม. 15 น." },
-                    { name: "สตรีมวาดรูป Speed Painting ถ่ายทอดสด", views: 4, duration: "4 ชม. 20 น." }
-                ],
-                avgDaily: "9.7 ชม./วัน",
-                peakDay: "วันเสาร์ (16 ชม.)",
-                totalVideosWatched: "58 สตรีม"
-            },
-            { 
-                key: 'news', 
-                title: 'ข่าว (News & Blogs)', 
-                badge: 'สาระ & ทันเหตุการณ์', 
-                dailyHours: [3.5, 3, 2.5, 2, 1.8, 2.8, 2.6],
-                topVideos: [
-                    { name: "สรุปข่าวเด่นรอบวัน สาระเด่นประเด็นร้อน", views: 32, duration: "6 ชม. 20 น." },
-                    { name: "วิเคราะห์เทคโนโลยี AI และไอทีปี 2026", views: 14, duration: "4 ชม. 10 น." },
-                    { name: "สารคดี: ความลับของมหาสมุทรลึก", views: 8, duration: "3 ชม. 00 น." },
-                    { name: "เจาะลึกเศรษฐกิจโลก ไตรมาสที่ 2", views: 6, duration: "2 ชม. 15 น." },
-                    { name: "รายการทอล์คโชว์สัมภาษณ์แขกรับเชิญพิเศษ", views: 5, duration: "1 ชม. 45 น." }
-                ],
-                avgDaily: "2.6 ชม./วัน",
-                peakDay: "วันจันทร์ (3.5 ชม.)",
-                totalVideosWatched: "95 คลิป"
-            },
-            { 
-                key: 'shorts', 
-                title: 'คลิปสั้น (Shorts)', 
-                badge: 'บันเทิงแบบเร่งด่วน', 
-                dailyHours: [3.2, 4.1, 5.5, 2.9, 4, 4.8, 4.5],
-                topVideos: [
-                    { name: "ล้างตู้เย็นยังไงให้สะอาดภายใน 60 วินาที #Shorts", views: 85, duration: "4 ชม. 30 น." },
-                    { name: "คลิปตลกขำขัน รวมเรื่องฮาประจำสัปดาห์ #Shorts", views: 72, duration: "4 ชม. 10 น." },
-                    { name: "เมนูไข่ง่ายๆ ทำได้ใน 1 นาที #Shorts", views: 60, duration: "3 ชม. 20 น." },
-                    { name: "เทคนิคการตั้งค่าโทรศัพท์ให้ลื่นขึ้น #Shorts", views: 45, duration: "2 ชม. 50 น." },
-                    { name: "ทริคการจัดโต๊ะคอมให้สบายตา #Shorts", views: 38, duration: "2 ชม. 15 น." }
-                ],
-                avgDaily: "4.1 ชม./วัน",
-                peakDay: "วันพุธ (5.5 ชม.)",
-                totalVideosWatched: "520 คลิป"
-            }
-        ];
+.today-info h2 {
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    opacity: 0.9;
+    margin-bottom: 0.5rem;
+}
 
-        // 🎲 2. คลังข้อมูลสำหรับสุ่มสถานะดูสดด้านล่าง
-        const rawUsers = ["สมชาย สายลุย", "มินตรา น่ารัก", "กิตติพงษ์ วงศ์คำ", "ณัฐชา พาเพลิน", "ธนกร ยอดนักสตรีม", "อนันต์ เปี่ยมดี", "ศิริพร สอนง่าย", "วีรชัย ชัยชนะ"];
-        const rawVideos = ["LIVE: แข่งขัน Esport รอบชิงชนะเลิศ", "Official MV - ซิงเกิ้ลใหม่ล่าสุด", "สรุปข่าวเด่นรอบวัน สาระเด่น", "สอนเขียนโค้ด HTML CSS ฉบับมือใหม่", "10 อันดับของกินในเซเว่น"];
-        const rawTimes = ["เมื่อสักครู่", "1 นาทีที่แล้ว", "2 นาทีที่แล้ว", "3 นาทีที่แล้ว"];
-        const dayLabels = ['จ.', 'อ.', 'พ.', 'พฤ.', 'ศ.', 'ส.', 'อา.'];
+.today-info .total-time {
+    font-size: 2.5rem;
+    font-weight: 700;
+}
 
-        // 🛠️ 3. วาดการ์ดหน้าหลัก (เพิ่ม onclick เปิดหน้ารายละเอียด)
-        function renderDashboard() {
-            const container = document.getElementById('category-grid-container');
-            container.innerHTML = '';
-            youtubeData.forEach(cat => {
-                const totalHours = cat.dailyHours.reduce((a, b) => a + b, 0);
-                const fullHours = Math.floor(totalHours);
-                const minutes = Math.round((totalHours - fullHours) * 60);
-                const maxHour = Math.max(...cat.dailyHours);
+.today-date {
+    text-align: right;
+    font-size: 1.1rem;
+    background: rgba(255, 255, 255, 0.15);
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    backdrop-filter: blur(5px);
+}
 
-                let chartHtml = '';
-                cat.dailyHours.forEach((hours, index) => {
-                    const barHeight = maxHour > 0 ? (hours / maxHour) * 85 : 0; 
-                    chartHtml += `
-                        <div class="bar-wrapper">
-                            <div class="bar" style="height: ${barHeight}%;" data-time="${hours} ชม."></div>
-                            <span class="day-label">${dayLabels[index]}</span>
-                        </div>
-                    `;
-                });
+#current-date { font-weight: 600; }
+#current-time { font-size: 0.85rem; opacity: 0.8; }
 
-                // ใส่ onclick="showDetail('${cat.key}')" เพื่อให้คลิกแล้วเปิดหน้ารายละเอียด
-                container.innerHTML += `
-                    <div class="category-card ${cat.key}" onclick="showDetail('${cat.key}')" style="cursor: pointer;">
-                        <div class="card-header">
-                            <div class="card-title">${cat.title}</div>
-                            <span class="badge">${cat.badge}</span>
-                        </div>
-                        <div class="weekly-total">
-                            <div class="label">7 วันที่ผ่านมา</div>
-                            <div class="time">${fullHours} ชม. ${minutes > 0 ? minutes + ' น.' : ''}</div>
-                        </div>
-                        <div class="chart-container">${chartHtml}</div>
-                    </div>
-                `;
-            });
-        }
+.category-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
+}
 
-        // 🔍 4. ฟังก์ชันแสดงหน้ารายละเอียด (Detail View)
-        function showDetail(categoryKey) {
-            const data = youtubeData.find(item => item.key === categoryKey);
-            if (!data) return;
+.category-card {
+    background-color: var(--card-dark-blue);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 1.5rem;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
 
-            const totalHours = data.dailyHours.reduce((a, b) => a + b, 0);
-            const fullHours = Math.floor(totalHours);
-            const minutes = Math.round((totalHours - fullHours) * 60);
+.category-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 20px -10px rgba(0,0,0,0.5);
+    border-color: var(--accent-blue);
+}
 
-            // ใส่ข้อมูล Header หน้ารายละเอียด
-            document.getElementById('detail-header').className = `detail-header-card ${data.key}`;
-            document.getElementById('detail-header').innerHTML = `
-                <div>
-                    <span class="badge">${data.badge}</span>
-                    <h2 style="font-size: 2rem; margin-top: 0.5rem;">${data.title}</h2>
-                    <p style="color: var(--text-gray); margin-top: 0.3rem;">ข้อมูลการรับชมเชิงลึกในรอบ 7 วันที่ผ่านมา</p>
-                </div>
-                <div style="text-align: right;">
-                    <div style="font-size: 0.9rem; color: var(--text-gray);">เวลารวมทั้งหมด</div>
-                    <div style="font-size: 2.2rem; font-weight: 700; color: var(--pure-white);">${fullHours} ชม. ${minutes} น.</div>
-                </div>
-            `;
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
 
-            // ใส่รายการ Top 5 Videos
-            const topListContainer = document.getElementById('top-videos-list');
-            topListContainer.innerHTML = '';
-            data.topVideos.forEach((vid, index) => {
-                topListContainer.innerHTML += `
-                    <div class="top-item">
-                        <div class="rank">${index + 1}</div>
-                        <div class="vid-info">
-                            <div class="vid-title">${vid.name}</div>
-                            <div class="vid-meta">จำนวนครั้งที่เปิด: ${vid.views} ครั้ง</div>
-                        </div>
-                        <div class="vid-duration">${vid.duration}</div>
-                    </div>
-                `;
-            });
+.card-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--pure-white);
+}
 
-            // ใส่สรุปสถิติย่อย
-            document.getElementById('stats-summary').innerHTML = `
-                <div class="stat-box">
-                    <div class="stat-label">เฉลี่ยเวลาต่อวัน</div>
-                    <div class="stat-value">${data.avgDaily}</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-label">วันที่รับชมมากที่สุด</div>
-                    <div class="stat-value">${data.peakDay}</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-label">จำนวนวิดีโอที่รับชม</div>
-                    <div class="stat-value">${data.totalVideosWatched}</div>
-                </div>
-            `;
+.badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
 
-            // สลับหน้าจอ
-            document.getElementById('main-view').classList.add('hidden');
-            document.getElementById('detail-view').classList.remove('hidden');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
+.music .badge { background-color: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+.live .badge { background-color: rgba(239, 68, 68, 0.2); color: #f87171; }
+.news .badge { background-color: rgba(16, 185, 129, 0.2); color: #34d399; }
+.shorts .badge { background-color: rgba(234, 179, 8, 0.2); color: #facc15; }
 
-        // 🏠 5. ฟังก์ชันกดกลับหน้าหลัก
-        function showMainView() {
-            document.getElementById('detail-view').classList.add('hidden');
-            document.getElementById('main-view').classList.remove('hidden');
-        }
+.weekly-total { margin-bottom: 2rem; }
+.weekly-total .label { font-size: 0.85rem; color: var(--text-gray); }
+.weekly-total .time { font-size: 1.6rem; font-weight: 700; color: var(--pure-white); margin-top: 0.2rem; }
 
-        // 🔄 6. ระบบสุ่มสถานะ Live Activity ด้านล่าง
-        function getRandomItem(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
-        function createTickerItemHTML() {
-            return `
-                <div class="ticker-item">
-                    <div class="user-name">👤 ${getRandomItem(rawUsers)}</div>
-                    <div class="video-title">🎬 กำลังรับชม: <span>${getRandomItem(rawVideos)}</span></div>
-                    <div class="activity-time">⏱️ ${getRandomItem(rawTimes)}</div>
-                </div>
-            `;
-        }
-        function initActivityTicker() {
-            const ticker = document.getElementById('ticker-container');
-            ticker.innerHTML = createTickerItemHTML() + createTickerItemHTML();
-            const itemHeight = 60;
-            setInterval(() => {
-                ticker.style.transition = "transform 0.5s ease-in-out";
-                ticker.style.transform = `translateY(-${itemHeight}px)`;
-                setTimeout(() => {
-                    ticker.removeChild(ticker.children[0]);
-                    ticker.style.transition = "none";
-                    ticker.style.transform = `translateY(0px)`;
-                    ticker.innerHTML += createTickerItemHTML();
-                }, 500);
-            }, 2500);
-        }
+.chart-container {
+    height: 120px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    padding-top: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    position: relative;
+}
 
-        // ⏱️ 7. เวลา Real-time ด้านบน
-        let totalSecondsToday = 28450; 
-        function updateLiveTime() {
-            totalSecondsToday += Math.floor(Math.random() * 3) + 1; 
-            const hrs = Math.floor(totalSecondsToday / 3600);
-            const mins = Math.floor((totalSecondsToday % 3600) / 60);
-            const secs = totalSecondsToday % 60;
+.bar-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    height: 100%;
+    justify-content: flex-end;
+}
 
-            document.getElementById('live-total-time').innerText = 
-                `${String(hrs).padStart(2, '0')} ชม. ${String(mins).padStart(2, '0')} น. ${String(secs).padStart(2, '0')} ว.`;
+.bar {
+    width: 65%;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    position: relative;
+}
 
-            const now = new Date();
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            document.getElementById('current-date').innerText = now.toLocaleDateString('th-TH', options);
-            document.getElementById('current-time').innerText = now.toLocaleTimeString('th-TH');
-        }
+.music .bar { background-color: var(--accent-blue); }
+.live .bar { background-color: #ef4444; }
+.news .bar { background-color: #10b981; }
+.shorts .bar { background-color: #eab308; }
 
-        // เริ่มทำงาน
-        renderDashboard();
-        initActivityTicker();
-        setInterval(updateLiveTime, 1000);
-        updateLiveTime();
-    </script>
-</body>
-</html>
+.bar::after {
+    content: attr(data-time);
+    position: absolute;
+    top: -26px;
+    left: 50%;
+    transform: translateX(-50%) scale(1);
+    background-color: var(--pure-white);
+    color: var(--bg-dark-blue);
+    font-size: 0.7rem;
+    font-weight: bold;
+    padding: 2px 5px;
+    border-radius: 4px;
+    white-space: nowrap;
+    pointer-events: none;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+}
+
+.day-label { font-size: 0.75rem; color: var(--text-gray); margin-top: 0.5rem; }
+
+/* 🎨 Live Activity Box */
+.live-activity-box {
+    background-color: var(--card-dark-blue);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 1.2rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+.activity-header {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--pure-white);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+    border-right: 2px solid var(--border-color);
+    padding-right: 2rem;
+}
+
+.live-dot {
+    width: 10px;
+    height: 10px;
+    background-color: #ef4444;
+    border-radius: 50%;
+    display: inline-block;
+    animation: blink 1.5s infinite ease-in-out;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 0.4; transform: scale(0.9); }
+    50% { opacity: 1; transform: scale(1.1); }
+}
+
+.ticker-wrapper { flex-grow: 1; height: 60px; overflow: hidden; position: relative; }
+.ticker-container { display: flex; flex-direction: column; }
+.ticker-item {
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    font-size: 0.95rem;
+}
+
+.user-name { font-weight: 600; color: var(--cyan-blue); min-width: 150px; }
+.video-title { color: var(--text-light); flex-grow: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.video-title span { font-weight: 500; color: var(--pure-white); }
+.activity-time { color: var(--text-gray); font-size: 0.85rem; white-space: nowrap; }
+
+/* 🔍 หน้ารายละเอียด (Detail View Styles) */
+.back-btn {
+    background: var(--card-dark-blue);
+    color: var(--text-light);
+    border: 1px solid var(--border-color);
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 500;
+    margin-bottom: 1.5rem;
+    transition: all 0.2s ease;
+}
+
+.back-btn:hover {
+    background: var(--accent-blue);
+    color: var(--pure-white);
+    border-color: var(--accent-blue);
+}
+
+.detail-header-card {
+    background-color: var(--card-dark-blue);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.detail-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 1.5rem;
+}
+
+.detail-card {
+    background-color: var(--card-dark-blue);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 1.5rem;
+}
+
+.detail-card h3 {
+    font-size: 1.15rem;
+    color: var(--pure-white);
+    margin-bottom: 1.2rem;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.top-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.top-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.8rem 1rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.rank {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--accent-blue);
+    width: 30px;
+    text-align: center;
+}
+
+.vid-info { flex-grow: 1; }
+.vid-title { font-size: 0.95rem; font-weight: 600; color: var(--pure-white); margin-bottom: 0.2rem; }
+.vid-meta { font-size: 0.8rem; color: var(--text-gray); }
+.vid-duration { font-size: 0.9rem; font-weight: 600; color: #34d399; white-space: nowrap; }
+
+.stats-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.stat-box {
+    background: rgba(255, 255, 255, 0.03);
+    padding: 1rem;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.stat-label { font-size: 0.85rem; color: var(--text-gray); margin-bottom: 0.3rem; }
+.stat-value { font-size: 1.25rem; font-weight: 700; color: var(--pure-white); }
+
+@media (max-width: 900px) {
+    .detail-grid { grid-template-columns: 1fr; }
+    .detail-header-card { flex-direction: column; align-items: flex-start; gap: 1rem; }
+}
